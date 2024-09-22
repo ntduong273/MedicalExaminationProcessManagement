@@ -125,7 +125,9 @@ CREATE TABLE THUOC
 (
    MaThuoc varchar(10) primary key,
    TenThuoc nvarchar(50) not null,
-   GiaThuoc float check(GiaThuoc > 0)
+   GiaThuoc float check(GiaThuoc > 0),
+   DonVi nvarchar(10) not null,
+   MoTa nvarchar(200)
 )
 SELECT * FROM thuoc
 
