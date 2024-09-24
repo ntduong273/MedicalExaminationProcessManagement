@@ -5,3 +5,7 @@ Lớp L01 - Nhóm 8
 thông tin người bệnh, thông tin các loại thuốc, đơn thuốc được bác sĩ kê cho bệnh nhân, hóa đơn thanh toán
 tiền thuốc mà người bệnh phải trả cho bệnh viện,...
 
+Thành viên tham gia thực hiện:
+1. Nguyễn Nam Thiện     - CT070252
+2. Nguyễn Tùng Dương    - AT190115
+3. Nguyễn Viết Dầu      - AT190110
