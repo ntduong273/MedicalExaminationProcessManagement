@@ -3,7 +3,7 @@ USE MEPM
 
 
 
-CREATE TABLE BENHNHAN 
+CREATE TABLE BENHNHAN
 (
    MaBN varchar(10) primary key,
    TenBN nvarchar(50) not null,
@@ -13,7 +13,7 @@ CREATE TABLE BENHNHAN
    Sdt varchar(12) unique,
    TinhTrangSK nvarchar(50)
 )
-SELECT *  FROM benhnhan
+SELECT * FROM benhnhan
 
 INSERT INTO BENHNHAN VALUES
 ('BN01', N'Nguyễn Văn An', N'Nam', '12/4/1980', N'Hà Nội', '0001', N'Đau bụng dưới, có triệu chứng nôn mửa'),
@@ -43,6 +43,30 @@ INSERT INTO BENHNHAN VALUES
 ('BN25', N'Đỗ Thị Quỳnh', N'Nữ', '07/19/1969', N'Hà Nam', '0025', N'Đau nhức khớp chân')
 
 
+
+CREATE TABLE KHOA
+(
+   MaKhoa varchar(10) primary key,
+   TenKhoa nvarchar(50) not null,
+)
+SELECT * FROM khoa
+
+INSERT INTO KHOA VALUES
+('K01', N'Khoa Tim Mạch'),
+('K02', N'Khoa Nội Tiêu Hóa'),
+('K03', N'Khoa Cơ - Xương - Khớp'),
+('K04', N'Khoa Thần Kinh'),
+('K05', N'Khoa Da Liễu'),
+('K06', N'Khoa Nhi'),
+('K07', N'Khoa Bỏng'),
+('K08', N'Khoa Mắt'),
+('K09', N'Khoa Hồi Sức Cấp Cứu'),
+('K10', N'Khoa Sản'),
+('K11', N'Khoa Ngoại Lồng Ngực'),
+('K12', N'Khoa Dị Ứng'),
+('K13', N'Khoa Ngoại Thận - Tiết Niệu'),
+('K14', N'Khoa Tai - Mũi - Họng'),
+('K15', N'Khoa Răng - Hàm - Mặt')
 
 
 
@@ -93,54 +117,26 @@ INSERT INTO BACSI VALUES
 
 
 
-CREATE TABLE KHOA
-(
-   MaKhoa varchar(10) primary key,
-   TenKhoa nvarchar(50) not null
-)
-SELECT * FROM khoa
-
-INSERT INTO KHOA VALUES
-('K01', N'Khoa Tim Mạch'),
-('K02', N'Khoa Nội Tiêu Hóa'),
-('K03', N'Khoa Cơ - Xương - Khớp'),
-('K04', N'Khoa Thần Kinh'),
-('K05', N'Khoa Da Liễu'),
-('K06', N'Khoa Nhi'),
-('K07', N'Khoa Bỏng'),
-('K08', N'Khoa Mắt'),
-('K09', N'Khoa Hồi Sức Cấp Cứu'),
-('K10', N'Khoa Sản'),
-('K11', N'Khoa Ngoại Lồng Ngực'),
-('K12', N'Khoa Dị Ứng'),
-('K13', N'Khoa Ngoại Thận - Tiết Niệu'),
-('K14', N'Khoa Tai - Mũi - Họng'),
-('K15', N'Khoa Răng - Hàm - Mặt')
-
-
-
-
 
 CREATE TABLE THUOC
 (
    MaThuoc varchar(10) primary key,
    TenThuoc nvarchar(50) not null,
    GiaThuoc float check(GiaThuoc > 0),
-   DonVi nvarchar(10) not null,
+   Donvi nvarchar(10),
    MoTa nvarchar(250)
 )
 SELECT * FROM thuoc
 
-
-
 INSERT INTO THUOC VALUES
--- Thuốc tim mạch
+--THUOC TIM MACH
 ('T001', 'Dacolfort Danapha', 2600, N'Viên', N'Chỉ định để điều trị những triệu chứng có liên quan đến suy tĩnh mạch, mạch bạch huyết'),
 ('T002', 'Henex 500mg Abbott', 220000, N'Hộp', N'Điều trị các triệu chứng và dấu hiệu của suy tĩnh mạch – mạch bạch huyết'),
 ('T003', 'Solufemo Hataphar', 185000, N'Hộp', N'Điều trị và dự phòng các loại thiếu máu do thiếu sắt, cần bổ sung sắt'),
 ('T004', 'Tebonin 120mg', 11267, N'Viên', N'Chỉ định điều trị các trường hợp rối loạn tuần hoàn máu não và ngoại biên'),
 ('T005', 'Cardicor Mekophar 5mg', 3600, N'Viên', N'Điều trị cao huyết áp từ nhẹ đến vừa, các chứng đau thắt ngực trong bệnh mạch vành'),
--- Thuốc tiêu hóa
+
+--THUOC TIEU HOA
 ('T006', 'Bioflora 100mg Biocodex', 6000, N'Gói', N'Điều trị và ngăn ngừa bệnh tiêu chảy cấp tái phát'),
 ('T007', 'Detriat', 124000, N'Hộp', N'Điều chỉnh hoạt động của hệ cơ trơn đặc biệt tác dụng tốt trên hệ tiêu hóa'),
 ('T008', 'Entero-Caps 200mg Domesco', 4000, N'Viên', N'điều trị tiêu chảy cấp tính do nhiễm khuẩn, không có dấu hiệu xâm lấn (suy giảm tổng trạng, sốt cao, dấu hiệu nhiễm trùng - nhiễm độc...'),
@@ -150,24 +146,28 @@ INSERT INTO THUOC VALUES
 ('T012', 'Alumina Nadyphar', 18000, N'Hộp', N'Chỉ định trong điều trị hỗ trợ giảm viêm loét dạ dày - tá tràng và giúp làm giảm các triệu chứng do tăng acid dạ dày'),
 ('T013', 'Cholapan OPC', 90000, N'Hộp', N'điều trị các triệu chứng đầy hơi, sình bụng, đau thượng vị, ăn uống khó tiêu, ợ chua'),
 ('T014', 'Pantoloc 40mg Takeda', 2900, N'Viên', N'điều trị viêm thực quản do trào ngược, loét dạ dày, loét tá tràng'),
--- Thuốc cơ - xương - khớp
+
+--THUOC CO - XUONG - KHOP
 ('T015', 'Otibone 750 Boston', 1400, N'Viên', N'Chỉ định trong các trường hợp làm giảm triệu chứng của thoái hóa khớp gối nhẹ và trung bình'),
 ('T016', 'Methocarbamol 500mg', 2100, N'Viên', N'Điều trị ngắn hạn các cơn đau và co thắt cơ do chấn thương như bong gân, trật khớp'),
 ('T017', 'Mydocalm 150 Gedeon', 210000, N'Hộp', N'Điều trị sự tăng trương lực cơ xương trong các rối loạn thần kinh thực thể, tăng trương lực cơ, co thắt cơ và các co thắt kèm theo các bệnh vận động'),
 ('T018', 'Davita Bone Sugar Free DHG', 21500, N'Tuýp', N'Phòng và điều trị bệnh loãng xương ở những đối tượng có nguy cơ cao'),
 ('T019', 'Dochicin 1mg Domesco', 190000, N'Hộp', N'Phòng và điều trị bệnh gout cấp độ nhẹ'),
--- Thuốc thần kinh
+
+--THUOC THAN KINH
 ('T020', 'Zapnex-10 DaviPharm', 225000, N'Hộp', N'Điều trị duy trì bệnh tâm thần phân liệt, cũng như các bệnh loạn thần khác'),
 ('T021', 'Lyrica 75mg Pfizer', 5200, N'Viên', N'Điều trị đau thần kinh nguồn gốc trung ương và ngoại vi, rối loạn lo âu lan tỏa ở người lớn'),
 ('T022', 'Mifexton 500 Mediplantex', 430000, N'Hộp', N'dùng trong các trường hợp mắc bệnh não cấp tính, bệnh não mạn tính và điều trị Parkinson'),
 ('T023', N'Hoạt Huyết Nhất Nhất', 115000, N'Hộp', N'Điều trị các chứng huyết hư, ứ trệ, phòng ngừa và điều trị thiểu năng tuần hoàn não'),
 ('T024', N'Hoạt Huyết Dưỡng Não Traphaco', 95000, N'Hộp', N'tác dụng bổ khí huyết, phòng và điều trị các bệnh suy giảm trí nhớ, căng thẳng thần kinh, đau đầu, hoa mắt, chóng mặt, mất ngủ'),
--- Thuốc dị ứng
+
+--THUOC DI UNG
 ('T025', 'Bostanex Boston', 35000, N'Chai', N'Chỉ định để làm giảm các triệu chứng liên quan đến viêm mũi dị ứng, nổi mày đay'),
 ('T026', 'Xyzal 5mg GSK', 3600, N'Viên', N'Thuốc được dùng để điều trị các triệu chứng viêm mũi dị ứng và mày đay mạn tính'),
--- Thuốc bổ sung vitamin
+
+--THUOC BO SUNG VITAMIN
 ('T027', 'Magne-B6 Corbière Sanofi', 1900, N'Viên', N'Dùng để điều trị các trường hợp thiếu magnesi riêng biệt hay kết hợp'),
-('T028', 'Pokemine 50mg Medisun', 125000, N'Hộp', N'Bổ sung sắt cho bệnh nhân có nguy cơ bị thiếu máu do thiếu sắt như: Phụ nữ mang thai, người vừa phẫu thuật, người suy dinh dưỡng, trẻ em thiếu máu do thiếu sắt'),
+('T028', 'Pokemine 50mg Medisun', 125000, N'Hộp', N'ổ sung sắt cho bệnh nhân có nguy cơ bị thiếu máu do thiếu sắt như: Phụ nữ mang thai, người vừa phẫu thuật, người suy dinh dưỡng, trẻ em thiếu máu do thiếu sắt'),
 ('T029', N'Zinc-Kid Inmed Nam Hà', 3400, N'Gói', N'Bổ sung kẽm vào chế độ ăn hàng ngày và điều trị các trường hợp thiếu kẽm từ nhẹ đến vừa và nặng'),
 ('T030', 'Kidrinks Phargington', 230000, N'Hộp', N'Được dùng để bổ sung vitamin A, D, B1, B2, B6, B12 cho trẻ'),
 ('T031', 'Pecaldex Nadyphar', 41000, N'Hộp', N'Bổ sung canxi trong trường hợp thiếu canxi, trẻ em chậm lớn'),
@@ -175,28 +175,33 @@ INSERT INTO THUOC VALUES
 ('T033', 'Enervon United', 30000, N'Hộp', N'Điều trị thiếu vitamin C và B ở người lớn và thanh thiếu niên trên 16 tuổi trong trường hợp thiếu hụt'),
 ('T034', N'Dung dịch Ringer Lactate', 100000, N'Chai',N'Truyền dung dịch trong trường hợp mất nước nặng, không thể bồi phụ được bằng đường uống (người bệnh hôn mê, uống vào nôn ngay, trụy mạch,...)'),
 ('T035', 'Oresol 245 DHG', 1400, N'Gói', N'Dùng để thay thế nước và chất điện giải bị mất trong các trường hợp: Tiêu chảy cấp, nôn mửa, sốt cao, sốt xuất huyết,...'),
--- Thuốc kháng sinh
+
+--THUOC KHANG SINH
 ('T036', 'Bromanase', 3900, N'Viên', N'Điều trị viêm sưng, chống phù nề sau khi phẫu thuật và chấn thương hiệu quả'),
 ('T037', 'Acemol 325mg Nadyphar', 11000, N'Hộp', N'Chỉ định trong điều trị hỗ trợ giảm đau và hạ sốt trong nhiều trường hợp'),
 ('T038', 'Cledomox 625 Tenamyd', 80000, N'Hộp', N'Dùng cho bệnh nhân điều trị các bệnh nhiễm khuẩn do các vi khuẩn nhạy cảm'),
 ('T039', 'Amoxicillin 250mg Imexpharm', 6000, N'Gói', N'điều trị các nhiễm khuẩn do các vi khuẩn nhạy cảm với thuốc tại các vị trí: Đường hô hấp trên, đường hô hấp dưới, nhiễm khuẩn đường mật, đường tiêu hóa'),
--- Thuốc đường hô hấp
-('T040', 'Pms-Azimax 500mg Imexpharm', 48000, N'Hộp', N'điều trị nhiễm trùng gây ra do các vi khuẩn nhạy cảm với thuốc như nhiễm trùng đường hô hấp trên, viêm xoang, viêm amiđan, viêm tai giữa')
+
+--THUOC DUONG HO HAP
+('T040', 'Pms-Azimax 500mg Imexpharm', 48000, N'Hộp', N'điều trị nhiễm trùng gây ra do các vi khuẩn nhạy cảm với thuốc như nhiễm trùng đường hô hấp trên, viêm xoang, viêm amiđan, viêm tai giữa'),
 ('T041', 'Kipel 10mg MEGA We care', 120000, N'Hộp', N'Dự phòng và điều trị hen phế quản mạn tính, dự phòng cơn co thắt phế quản do gắng sức; điều trị triệu chứng viêm mũi dị ứng'),
 ('T042', N'Khí dung Seretide Evohaler DC 25/250 Gsk', 150000, N'Hộp', N'Thuốc dùng điều trị bệnh hen phế quản và bệnh tắc nghẽn phổi mạn tính'),
--- Thuốc thận
+
+--THUOC THAN
 ('T043', 'Ketosteril Fresenius Kabi', 90000, N'Hộp', N'Phòng ngừa và điều trị bệnh do rối loạn hoặc suy giảm cơ chế chuyển hoá protein trong bệnh suy thận mạn'),
 ('T044', 'Keamine Stella', 150000, N'Hộp', N'Dùng để ngăn ngừa và điều trị bệnh do rối loạn hay suy giảm cơ chế chuyển hóa protein ở người suy thận mạn tính'),
-('T045', 'Furagon Mekophar', 90000, N'Hộp', N'phòng tránh và điều trị bệnh do rối loạn hoặc suy giảm cơ chế chuyển hóa protein trong bệnh suy thận mạn')
--- Thuốc tai - mũi - họng
+('T045', 'Furagon Mekophar', 90000, N'Hộp', N'phòng tránh và điều trị bệnh do rối loạn hoặc suy giảm cơ chế chuyển hóa protein trong bệnh suy thận mạn'),
+
+--THUOC TAI - MUI - HONG
 ('T046', 'Otifar Pharmedic', 7000, N'Chai', N'định để điều trị nhiễm khuẩn do viêm tai ngoài: Viêm tai giữa cấp xung huyết'),
 ('T047', 'Oteotan 1mg/0.5ml Lesvi', 26000, N'Hộp', N'chỉ định để điều trị viêm tai ngoài cấp tính và viêm tai giữa có mủ mạn tính'),
 ('T048', 'Ultibro Breezhaler 110/50mcg Novartis', 68000, N'Hộp', N'Điều trị duy trì để làm giảm triệu chứng và làm giảm các đợt cấp ở bệnh nhân mắc bệnh phổi mạn tính tắc nghẽn (COPD)'),
 ('T049', 'Anoro Ellipta 62.5/25mcg GSK', 80000, N'Hộp', N'Điều trị duy trì giãn phế quản để làm giảm các triệu chứng ở người lớn bị bệnh phổi tắc nghẽn mạn tính (COPD)'),
 ('T050', 'Bambuterol 10 A.T', 49000, N'Hộp', N'Sử dụng để điều trị hen phế quản, viêm phế quản mạn tính, khí phế thủng và các bệnh lý phổi khác có kèm co thắt'),
+
 ('T051', N'Dung dịch tiêm Gentamicin 80mg HDPharma', 40000, N'Vỉ', N'điều trị các bệnh nhiễm khuẩn nặng toàn thân gây ra bởi các vi khuẩn gram âm và các vi khuẩn khác còn nhạy cảm'),
 
--- Thuốc tiết niệu
+--THUOC TIET NIEU
 ('T052', 'Xatral XL 10mg', 80000, N'Hộp', N'Dùng để điều trị triệu chứng chức năng của phì đại (tăng thể tích) lành tính tuyến tiền liệt'),
 ('T053', 'YSPuripax', 46000, N'Hộp', N'dùng để giảm triệu chứng tiểu khó và đau trên khớp mu bàng quang, tiểu đêm, tiểu nhiều lần và không kiểm soát được liên quan đến viêm bàng quang, tuyến tiền liệt, viêm niệu đạo,...')
 
@@ -211,8 +216,6 @@ CREATE TABLE DONTHUOC
    constraint RBKN_DT_BN foreign key (MaBN) references Benhnhan(MaBN)   --Ràng buộc giá trị MaBN trong DONTHUOC phải nằm trong MaBN của BENHNHAN
 )
 SELECT * FROM donthuoc
-
-
 
 INSERT INTO DONTHUOC VALUES
 ('DT001', 'K02BS01', 'BN01'),
@@ -237,17 +240,17 @@ INSERT INTO DONTHUOC VALUES
 ('DT020', 'K03BS01', 'BN25')
 
 
+
 CREATE TABLE CT_DONTHUOC 
 (
    MaDT varchar(10) not null,
    MaThuoc varchar(10) not null,
-   Soluong int check(Soluong > 0)
+   Soluong int check(Soluong > 0),
    constraint RBKC_DT primary key (MaDT, MaThuoc),							--Ràng buộc khóa chính của bảng là kết hợp 2 cột MaDT và MaThuoc
    constraint RBKN_DT_DT foreign key (MaDT) references DonThuoc(MaDT),		--Ràng buộc khóa ngoại của bảng CT_DONTHUOC với bảng DonThuoc thông qua MaDT
    constraint RBKN_DT_Th foreign key (MaThuoc) references Thuoc(MaThuoc)	--Ràng buộc khóa ngoại của bảng CT_DONTHUOC với bảng Thuoc thông qua MaThuoc
 )
 SELECT * FROM ct_donthuoc
-
 
 INSERT INTO CT_DONTHUOC VALUES
 ('DT001', 'T008', 2),
@@ -273,90 +276,110 @@ INSERT INTO CT_DONTHUOC VALUES
 
 
 
+CREATE TABLE HOADONTHUOC
+(
+   MaHDT varchar(10) primary key,
+   MaDT varchar(10) not null, 
+   MaBN varchar(10) not null,   
+   constraint RBKN_HDT_DT foreign key (MaDT) references DonThuoc(MaDT),		--Ràng buộc giá trị MaDT trong HOADON phải nằm trong MaDT của Donthuoc		
+   constraint RBKN_HDT_BN foreign key (MaBN) references BenhNhan(MaBN),		--Ràng buộc giá trị MaBN trong HOADON phải nằm trong MaBN của Benhnhan
+   NgayLap date not null,
+
+)
+SELECT * FROM HOADONTHUOC
+
+INSERT INTO HOADONTHUOC VALUES
+('HDT001', 'DT001', 'BN01', '08/19/2024'),
+('HDT002', 'DT002', 'BN02', '07/22/2024'),
+('HDT003', 'DT003', 'BN04', '08/06/2024'),
+('HDT004', 'DT004', 'BN05', '09/12/2024'),
+('HDT005', 'DT005', 'BN06', '09/17/2024'),
+('HDT006', 'DT006', 'BN07', '06/29/2024'),
+('HDT007', 'DT007', 'BN08', '08/02/2024'),
+('HDT008', 'DT008', 'BN10', '09/12/2024'),
+('HDT009', 'DT009', 'BN11', '09/14/2024'),
+('HDT010', 'DT010', 'BN12', '08/20/2024'),
+('HDT011', 'DT011', 'BN14', '08/29/2024'),
+('HDT012', 'DT012', 'BN15', '09/04/2024'),
+('HDT013', 'DT013', 'BN16', '09/05/2024'),
+('HDT014', 'DT014', 'BN18', '07/26/2024'),
+('HDT015', 'DT015', 'BN19', '08/29/2024'),
+('HDT016', 'DT016', 'BN20', '09/20/2024'),
+('HDT017', 'DT017', 'BN21', '07/30/2024'),
+('HDT018', 'DT018', 'BN23', '06/25/2024'),
+('HDT019', 'DT019', 'BN24', '09/12/2024'),
+('HDT020', 'DT020', 'BN25', '09/17/2024')
+
+
+
 
 CREATE TABLE DICHVU
 (
    MaDV varchar(10) primary key,
    TenDV nvarchar(50) not null,
-   DonGia int check(DonGia > 0)
-   MaKhoa varchar(10) not null,
-   constraint RBKN_DV_KH foreign key (MaKhoa) references KHOA(MaKhoa)		--Ràng buộc khóa ngoại của bảng DICHVU với bảng KHOA thông qua MaKhoa
+   DonGia int check(DonGia > 0),
+   MaKhoaQL varchar(10) not null,
+   constraint RBTV_DV_K foreign key (MaKhoaQL) references Khoa(MaKhoa)
 )
 SELECT * FROM dichvu
 
-
 INSERT INTO DICHVU VALUES
-('K01DV01', N'Điện Tim', 2000, 'K01'),
-('K01DV02', N'Mổ tim', 120000, 'K01'),
-('K02DV01', N'Nội Soi Dạ Dày', 600, 'K02'),
-('K02DV02', N'Mổ Nội Soi Dạ Dày', 2500, 'K02'),
-('K03DV01', N'Bó Bột Xương', 200, 'K03'),
-('K03DV02', N'Chụp XQuang', 80, 'K03'),
-('K07DV01', N'Phẫu Thuật Bỏng', 6000, 'K07'),
-('K08DV01', N'Kiểm Tra Thị Lực', 60, 'K08'),
-('K08DV02', N'Đo Độ Cận/Viễn Thị', 100, 'K08'),
-('K09DV01', N'Cấp Cứu', 4000, 'K09'),
-('K09DV02', N'Hồi Sức', 3000, 'K09'),
-('K10DV01', N'Siêu âm', 500, 'K10'),
-('K10DV02', N'Khám Thai', 200, 'K10'),
-('K10DV03', N'Chẩn Đoán Thai Nhi', 500, 'K10'),
-('K11DV01', N'Dưỡng Khí', 1200, 'K11'),
-('K11DV02', N'Lọc Phổi', 5000, 'K11'),
-('K13DV01', N'Nội Soi Thận', 500, 'K13'),
-('K13DV02', N'Mổ Sỏi Thận', 3000, 'K13'),
-('K13DV03', N'Lọc Thận', 5000, 'K13'),
-('K15DV01', N'Nhổ răng', 20, 'K15'),
-('K15DV02', N'Bọc Răng Sứ', 400, 'K15'),
-('K15DV03', N'Niềng Răng', 30000, 'K15')
+('K01DV01', N'Điện Tim', 2000000, 'K01'),
+('K01DV02', N'Mổ tim', 120000000, 'K01'),
+('K02DV01', N'Nội Soi Dạ Dày', 600000, 'K02'),
+('K02DV02', N'Mổ Nội Soi Dạ Dày', 2500000, 'K02'),
+('K03DV01', N'Bó Bột Xương', 200000, 'K03'),
+('K03DV02', N'Chụp XQuang', 80000, 'K03'),
+('K07DV01', N'Phẫu Thuật Bỏng', 6000000, 'K07'),
+('K08DV01', N'Kiểm Tra Thị Lực', 60000, 'K08'),
+('K08DV02', N'Đo Độ Cận/Viễn Thị', 100000, 'K08'),
+('K09DV01', N'Cấp Cứu', 4000000, 'K09'),
+('K09DV02', N'Hồi Sức', 3000000, 'K09'),
+('K10DV01', N'Siêu âm', 150000, 'K10'),
+('K10DV02', N'Khám Thai', 200000, 'K10'),
+('K10DV03', N'Chẩn Đoán Thai Nhi', 500000, 'K10'),
+('K11DV01', N'Dưỡng Khí', 1200000, 'K11'),
+('K11DV02', N'Lọc Phổi', 5000000, 'K11'),
+('K13DV01', N'Nội Soi Thận', 500000, 'K13'),
+('K13DV02', N'Mổ Sỏi Thận', 3000000, 'K13'),
+('K13DV03', N'Lọc Thận', 5000000, 'K13'),
+('K15DV01', N'Nhổ răng', 20000, 'K15'),
+('K15DV02', N'Bọc Răng Sứ', 400000, 'K15'),
+('K15DV03', N'Niềng Răng', 30000000, 'K15')
 
 
-
-
-CREATE TABLE HOADONTHUOC 
+CREATE TABLE SUDUNGDV
 (
-   MaHD varchar(10) primary key,
-   MaDT varchar(10) not null, 
-   MaBN varchar(10) not null,   
-   constraint RBKN_HD_DT foreign key (MaDT) references DonThuoc(MaDT),		--Ràng buộc giá trị MaDT trong HOADON phải nằm trong MaDT của Donthuoc		
-   constraint RBKN_HD_BN foreign key (MaBN) references BenhNhan(MaBN),		--Ràng buộc giá trị MaBN trong HOADON phải nằm trong MaBN của Benhnhan
-   NgayLap date not null,
-   Tongtien float check(Tongtien > 0)
+	MaSDDV varchar(10) primary key,
+	MaBN varchar(10) not null,
+	constraint RBKN_DV_BN foreign key (MaBN) references BenhNhan(MaBN)		--Ràng buộc khóa ngoại của bảng SUDUNGDV với bảng BENHNHAN thông qua MaBN
 )
-SELECT * FROM hoadonthuoc
+SELECT * FROM SUDUNGDV
 
+-- insert data vao SUDUNGDV
 
-INSERT INTO HOADONTHUOC VALUES
-('HDT001', 'DT001', 'BN01', '08/19/2024', 8000),
-('HDT002', 'DT002', 'BN02', '07/22/2024', 49000),
-('HDT003', 'DT003', 'BN04', '08/06/2024', 72000),
-('HDT004', 'DT004', 'BN05', '09/12/2024', 660000),
-('HDT005', 'DT005', 'BN06', '09/17/2024', 80000),
-('HDT006', 'DT006', 'BN07', '06/29/2024', 526000),
-('HDT007', 'DT007', 'BN08', '08/02/2024', 770000),
-('HDT008', 'DT008', 'BN10', '09/12/2024', 321000),
-('HDT009', 'DT009', 'BN11', '09/14/2024', 455000),
-('HDT010', 'DT010', 'BN12', '08/20/2024', 420000),
-('HDT011', 'DT011', 'BN14', '08/29/2024', 230000),
-('HDT012', 'DT012', 'BN15', '09/04/2024', 210000),
-('HDT013', 'DT013', 'BN16', '09/05/2024', 525000),
-('HDT014', 'DT014', 'BN18', '07/26/2024', 662000),
-('HDT015', 'DT015', 'BN19', '08/29/2024', 300000),
-('HDT016', 'DT016', 'BN20', '09/20/2024', 540000),
-('HDT017', 'DT017', 'BN21', '07/30/2024', 631000),
-('HDT018', 'DT018', 'BN23', '06/25/2024', 440000),
-('HDT019', 'DT019', 'BN24', '09/12/2024', 1081020),
-('HDT020', 'DT020', 'BN25', '09/17/2024', 380000)
+CREATE TABLE CT_DICHVU
+(
+	MaSDDV varchar(10) not null,
+	MaDV varchar(10) not null,
+	SoLuong int check (SoLuong > 0),
+	constraint RBKC_DV primary key (MaSDDV, MaDV),							--Ràng buộc khóa chính của bảng là kết hợp 2 cột MaDT và MaThuoc
+    constraint RBKN_DV_SD foreign key (MaSDDV) references SuDungDV(MaSDDV),		--Ràng buộc khóa ngoại của bảng CT_DONTHUOC với bảng DonThuoc thông qua MaDT
+    constraint RBKN_DV_DV foreign key (MaDV) references DichVu(MaDV)
+)
+select * from CT_DICHVU
 
-
-
+-- insert data vao CT_DICHVU
 
 CREATE TABLE HOADONDV
 (
-   MaHD varchar(10) not null,
-   MaDV varchar(10) not null,
-   Soluong int check(Soluong > 0),
-   constraint RBKC_HD primary key (MaHD, MaDV),								--Ràng buộc khóa chính của bảng là kết hợp 2 cột MaHD và MaDV
-   constraint RBKN_HD_HD foreign key (MaHD) references Hoadon(MaHD),		--Ràng buộc khóa ngoại của bảng HOADONDV với bảng Hoadon thông qua MaHD
-   constraint RBKN_HD_DV foreign key (MaDV) references DichVu(MaDV)			--Ràng buộc khóa ngoại của bảng HOADONDV với bảng Dichvu thông qua MaDV
+   MaHDDV varchar(10) primary key,
+   MaSDDV varchar(10) not null,
+   MaBN varchar(10) not null,
+   constraint RBKN_HDDV_DV foreign key (MaSDDV) references SuDungDV(MaSDDV), --Ràng buộc khóa ngoại của bảng HOADONDV với bảng SuDungDV thông qua MaSDDV
+   constraint RBKN_HDDV_BN foreign key (MaBN) references BenhNhan(MaBN),     --Ràng buộc khóa ngoại của bảng HOADONDV với bảng BenhNhan thông qua MaBN
+   NgayLap date not null
 )
 SELECT * FROM hoadondv
+
+-- insert data vao HOADONDV
