@@ -237,7 +237,7 @@ CREATE TABLE CT_DONTHUOC
 (
    MaDT varchar(10) not null,
    MaThuoc varchar(10) not null,
-   Soluong int check(Soluong > 0)
+   Soluong int check(Soluong > 0),
    constraint RBKC_DT primary key (MaDT, MaThuoc),							--Ràng buộc khóa chính của bảng là kết hợp 2 cột MaDT và MaThuoc
    constraint RBKN_DT_DT foreign key (MaDT) references DonThuoc(MaDT),		--Ràng buộc khóa ngoại của bảng CT_DONTHUOC với bảng DonThuoc thông qua MaDT
    constraint RBKN_DT_Th foreign key (MaThuoc) references Thuoc(MaThuoc)	--Ràng buộc khóa ngoại của bảng CT_DONTHUOC với bảng Thuoc thông qua MaThuoc
@@ -277,6 +277,17 @@ CREATE TABLE DICHVU
 )
 SELECT * FROM dichvu
 
+CREATE TABLE CT_DICHVU
+(
+	MaHDDV varchar(10) not null,
+	MaDV varchar(10) not null,
+	SoLuong int check (SoLuong > 0),
+	constraint RBKC_DV primary key (MaHDDV, MaDV),							--Ràng buộc khóa chính của bảng là kết hợp 2 cột MaDT và MaThuoc
+    constraint RBKN_DV_DV foreign key (MaDV) references DichVu(MaDV),		--Ràng buộc khóa ngoại của bảng CT_DONTHUOC với bảng DonThuoc thông qua MaDT
+    constraint RBKN_DV_HD foreign key (MaHDDV) references HoaDonDV(MaHDDV)
+)
+select * from CT_DICHVU
+
 INSERT INTO DICHVU VALUES
 ('K01DV01', N'Điện Tim', 2000000, 'K01'),
 ('K01DV02', N'Mổ tim', 120000000, 'K01'),
@@ -304,48 +315,51 @@ INSERT INTO DICHVU VALUES
 
 CREATE TABLE HOADONTHUOC
 (
-   MaHD varchar(10) primary key,
+   MaHDT varchar(10) primary key,
    MaDT varchar(10) not null, 
    MaBN varchar(10) not null,   
-   constraint RBKN_HD_DT foreign key (MaDT) references DonThuoc(MaDT),		--Ràng buộc giá trị MaDT trong HOADON phải nằm trong MaDT của Donthuoc		
-   constraint RBKN_HD_BN foreign key (MaBN) references BenhNhan(MaBN),		--Ràng buộc giá trị MaBN trong HOADON phải nằm trong MaBN của Benhnhan
+   constraint RBKN_HDT_DT foreign key (MaDT) references DonThuoc(MaDT),		--Ràng buộc giá trị MaDT trong HOADON phải nằm trong MaDT của Donthuoc		
+   constraint RBKN_HDT_BN foreign key (MaBN) references BenhNhan(MaBN),		--Ràng buộc giá trị MaBN trong HOADON phải nằm trong MaBN của Benhnhan
    NgayLap date not null,
-   Tongtien float check(Tongtien > 0)
+
 )
 SELECT * FROM HOADONTHUOC
 
 INSERT INTO HOADONTHUOC VALUES
-('HDT001', 'DT001', 'BN01', '08/19/2024', 8000),
-('HDT002', 'DT002', 'BN02', '07/22/2024', 49000),
-('HDT003', 'DT003', 'BN04', '08/06/2024', 72000),
-('HDT004', 'DT004', 'BN05', '09/12/2024', 660000),
-('HDT005', 'DT005', 'BN06', '09/17/2024', 80000),
-('HDT006', 'DT006', 'BN07', '06/29/2024', 526000),
-('HDT007', 'DT007', 'BN08', '08/02/2024', 770000),
-('HDT008', 'DT008', 'BN10', '09/12/2024', 321000),
-('HDT009', 'DT009', 'BN11', '09/14/2024', 455000),
-('HDT010', 'DT010', 'BN12', '08/20/2024', 420000),
-('HDT011', 'DT011', 'BN14', '08/29/2024', 230000),
-('HDT012', 'DT012', 'BN15', '09/04/2024', 210000),
-('HDT013', 'DT013', 'BN16', '09/05/2024', 525000),
-('HDT014', 'DT014', 'BN18', '07/26/2024', 662000),
-('HDT015', 'DT015', 'BN19', '08/29/2024', 300000),
-('HDT016', 'DT016', 'BN20', '09/20/2024', 540000),
-('HDT017', 'DT017', 'BN21', '07/30/2024', 631000),
-('HDT018', 'DT018', 'BN23', '06/25/2024', 440000),
-('HDT019', 'DT019', 'BN24', '09/12/2024', 1081020),
-('HDT020', 'DT020', 'BN25', '09/17/2024', 380000)
+('HDT001', 'DT001', 'BN01', '08/19/2024'),
+('HDT002', 'DT002', 'BN02', '07/22/2024'),
+('HDT003', 'DT003', 'BN04', '08/06/2024'),
+('HDT004', 'DT004', 'BN05', '09/12/2024'),
+('HDT005', 'DT005', 'BN06', '09/17/2024'),
+('HDT006', 'DT006', 'BN07', '06/29/2024'),
+('HDT007', 'DT007', 'BN08', '08/02/2024'),
+('HDT008', 'DT008', 'BN10', '09/12/2024'),
+('HDT009', 'DT009', 'BN11', '09/14/2024'),
+('HDT010', 'DT010', 'BN12', '08/20/2024'),
+('HDT011', 'DT011', 'BN14', '08/29/2024'),
+('HDT012', 'DT012', 'BN15', '09/04/2024'),
+('HDT013', 'DT013', 'BN16', '09/05/2024'),
+('HDT014', 'DT014', 'BN18', '07/26/2024'),
+('HDT015', 'DT015', 'BN19', '08/29/2024'),
+('HDT016', 'DT016', 'BN20', '09/20/2024'),
+('HDT017', 'DT017', 'BN21', '07/30/2024'),
+('HDT018', 'DT018', 'BN23', '06/25/2024'),
+('HDT019', 'DT019', 'BN24', '09/12/2024'),
+('HDT020', 'DT020', 'BN25', '09/17/2024')
 
 CREATE TABLE HOADONDV
 (
-   MaHD varchar(10) not null,
+   MaHDDV varchar(10) primary key,
    MaDV varchar(10) not null,
-   Soluong int check(Soluong > 0),
-   constraint RBKC_HD primary key (MaHD, MaDV),								--Ràng buộc khóa chính của bảng là kết hợp 2 cột MaHD và MaDV
-   constraint RBKN_HD_HD foreign key (MaHD) references Hoadon(MaHD),		--Ràng buộc khóa ngoại của bảng HOADONDV với bảng Hoadon thông qua MaHD
-   constraint RBKN_HD_DV foreign key (MaDV) references DichVu(MaDV)			--Ràng buộc khóa ngoại của bảng HOADONDV với bảng Dichvu thông qua MaDV
+   MaBN varchar(10) not null,
+   constraint RBKN_HDDV_DV foreign key (MaDV) references DichVu(MaDV),
+   constraint RBKN_HDDV_BN foreign key (MaBN) references BenhNhan(MaBN),     --Ràng buộc khóa ngoại của bảng HOADONDV với bảng Dichvu thông qua MaDV
+   NgayLap date not null
+ 
 )
-SELECT * FROM hoadondv
 
+SELECT * FROM hoadondv
+drop table HoaDonDV
 INSERT INTO HOADONDV VALUES
-(
+('HDDV001', 'K03DV02', 'BN03', 1, '08/28/2024'),
+('HDDV002', '', ''
