@@ -363,3 +363,41 @@ drop table HoaDonDV
 INSERT INTO HOADONDV VALUES
 ('HDDV001', 'K03DV02', 'BN03', 1, '08/28/2024'),
 ('HDDV002', '', ''
+
+
+
+
+---------------------*********TRUY VẤN*********---------------------
+	 
+       ----------1 bảng ----------
+	 
+--1.Tên những bệnh nhân quê Bến Tre
+	 select Tenbn N'Tên bệnh nhân'
+	 from Benhnhan
+	 where diachi=N'Bến Tre'
+--2.Thông tin bệnh nhân sinh năm 1997
+	 select*from benhnhan
+	 where year(ngaysinh) ='1997'
+--3.Đếm số bác sĩ ở khoa có mã khoa la 'K10'
+	 select count(makhoa) as N'Số bác sĩ K10'
+	 from bacsi
+	 where Makhoa='K10'
+--4.Tên các thuốc giá dưới 10000
+	 select Tenthuoc N'Tên thuốc'  from thuoc
+	 where Giathuoc<10000
+--5.Số lượng thuốc theo từng đơn vị 
+	 select Donvi N'Đơn vị',count(Tenthuoc) N'Số lượng thuốc'
+	 from thuoc
+	 group by Donvi
+--6.Tên những thuốc bắt đầu bằng chữ 'C'
+	 select Tenthuoc from thuoc 
+	 where Tenthuoc like N'C%'
+
+---------------Nhiều bảng---------------
+	 
+--1.Thông tin bệnh nhân có hóa đơn tháng 9
+         SELECT bn.*
+FROM benhnhan bn JOIN hoadonthuoc hdt ON bn.mabn = hdt.mabn
+WHERE MONTH(hdt.NgayLap) = 9;
+
+--2.
