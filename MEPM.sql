@@ -542,6 +542,10 @@ WHERE dongia = (
 					 else N'Chưa được khám'
 					 end) as N'Trạng thái bệnh nhân'
 	from benhnhan bn full join donthuoc dt on bn.mabn=dt.mabn 
---7.  
+--7.Sao kê số lượng đơn vị thuốc đã lên đơn cho bệnh nhân
+select t.donvi,count(ctdt.mathuoc) as N'Số lượng đã bán'
+from (hoadonthuoc hdt inner join ct_donthuoc ctdt on hdt.madt=ctdt.madt)
+inner join thuoc t on ctdt.mathuoc=t.mathuoc
+group by t.donvi  
 
 
