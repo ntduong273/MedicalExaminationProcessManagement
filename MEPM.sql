@@ -484,7 +484,7 @@ INSERT INTO HOADONDV VALUES
 ---------------------*********TRUY VẤN*********---------------------
 	 
        ----------1 bảng ----------
-	 
+
 --1.Tên những bệnh nhân quê Bến Tre
 	 select Tenbn N'Tên bệnh nhân'
 	 from Benhnhan
@@ -508,21 +508,13 @@ INSERT INTO HOADONDV VALUES
 	 where Tenthuoc like N'C%'
 
 ---------------Nhiều bảng---------------
-	 
+
+--Phu	 
 --1.Thông tin bệnh nhân có hóa đơn tháng 9
          SELECT bn.*
 FROM benhnhan bn JOIN hoadonthuoc hdt ON bn.mabn = hdt.mabn
 WHERE MONTH(hdt.NgayLap) = 9;
 
-<<<<<<< HEAD
---2.
-
-
--- Những bạn làm truy vấn thống nhất lại với nhau để trình bày cho dễ nhìn đi
-
-
-
-=======TRUY VẤN CỦA DẦU
 --2.Thông tin bác sĩ kê thuốc có mã 'DT011'
 select bs.Mabs 'MÃ BS',tenbs 'Tên BS',tenkhoa 'Tên khoa'
 from khoa k,bacsi bs,donthuoc dt
@@ -563,6 +555,14 @@ inner join thuoc t on ctdt.mathuoc=t.mathuoc
 group by t.donvi  
 
 --8
+
+
+-- Những bạn làm truy vấn thống nhất lại với nhau để trình bày cho dễ nhìn đi
+
+
+
+=======TRUY VẤN CỦA DẦU
+
 -- In ra đơn thuốc được kê đơn bới bác sĩ có tên là 'Phạm Long Nhật'
  Select DONTHUOC.MaDT from DONTHUOC
  inner join BACSI on DONTHUOC.MaBS= bacsi.MaBS where BACSI.TenBS =N'Phạm Long Nhật';
@@ -636,85 +636,66 @@ JOIN CT_DONTHUOC ON DONTHUOC.MaDT = CT_DONTHUOC.MaDT
 JOIN THUOC ON CT_DONTHUOC.MaThuoc = THUOC.MaThuoc
 WHERE YEAR(HOADONTHUOC.NgayLap) = 2024; 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+======== Truy vấn Chiến
+--7.Giá cao nhất của dịch vụ trong mỗi khoa
+select TenKhoa, TenDV, max(dv.DonGia) as GiaDichVuCaoNhat
+from DICHVU dv
+join KHOA k ON dv.MaKhoaQL = k.MaKhoa
+group by TenKhoa, TenDV
+order by GiaDichVuCaoNhat desc
+
+
+--8.Thống kê số lượng bệnh nhận theo từng độ tuổi và giới tính
+select GioiTinh,
+       CASE when YEAR(GETDATE()) - YEAR(NgaySinh) BETWEEN 0 AND 18 then '0-18'
+            when YEAR(GETDATE()) - YEAR(NgaySinh) BETWEEN 19 AND 30 then '19-30'
+			when YEAR(GETDATE()) - YEAR(NgaySinh) BETWEEN 31 AND 40 then '31-40'
+			when YEAR(GETDATE()) - YEAR(NgaySinh) BETWEEN 41 AND 50 then '41-50'
+			when YEAR(GETDATE()) - YEAR(NgaySinh) BETWEEN 51 AND 60 then '51-60'
+            else 'Trên 60'
+       end AS DoTuoi,
+       count(*) AS SoLuong
+from BENHNHAN
+group by GioiTinh,
+       case when YEAR(GETDATE()) - YEAR(NgaySinh) BETWEEN 0 AND 18 then '0-18'
+            when YEAR(GETDATE()) - YEAR(NgaySinh) BETWEEN 19 AND 30 then '19-30'
+            when YEAR(GETDATE()) - YEAR(NgaySinh) BETWEEN 31 AND 40 then '31-40'
+			when YEAR(GETDATE()) - YEAR(NgaySinh) BETWEEN 41 AND 50 then '41-50'
+			when YEAR(GETDATE()) - YEAR(NgaySinh) BETWEEN 51 AND 60 then '51-60'
+            else 'Trên 60'
+       end
+
+--9.Thống kê số lượng bệnh nhân trong mỗi tháng
+select MONTH(NgayLap) as Thang, count(*) as SoLuongBenhNhan
+from HOADONTHUOC
+group by MONTH(NgayLap)
+order by MONTH(NgayLap)
+
+
+--10.Số lương bệnh nhân mắc bệnh khi đến khám tại mỗi khoa:
+select TenKhoa, TinhTrangSK, count(*) AS SoLuongBN
+from BENHNHAN B
+join DONTHUOC DT on B.MaBN = DT.MaBN
+join BACSI BS on DT.MaBS = BS.MaBS
+join KHOA K on BS.MaKhoa = K.MaKhoa
+group by TenKhoa, TinhTrangSK
+order by TenKhoa, SoLuongBN desc
+
+--11. Thông tin về dịch vụ có giá cao nhất theo khoa
+select TenKhoa, TenDV, max(dv.DonGia) as GiaDichVuCaoNhat
+from DICHVU dv
+join KHOA k on dv.MaKhoaQL = k.MaKhoa
+group by k.TenKhoa, dv.TenDV
+order by GiaDichVuCaoNhat desc
+
+--12.Tên khoa, mã bác sĩ, tên bác sĩ có nhiều bệnh nhân khám nhất theo mỗi khóa
+select TenKhoa, bs.MaBS, TenBS, count(DISTINCT bn.MaBN) as SoLuongBenhNhan
+from KHOA k
+join BACSI bs on k.MaKhoa = bs.MaKhoa
+join DONTHUOC dt on bs.MaBS = dt.MaBS
+join BENHNHAN bn on dt.MaBN = bn.MaBN
+group by k.TenKhoa, bs.MaBS, bs.TenBS
+order by SoLuongBenhNhan desc
 
 
 ---------------------*********VIEW*********---------------------
@@ -777,8 +758,43 @@ SELECT * FROM Thongtinkhoa
 
 
 
-
 -- 5. Tạo VIEW cho biết dịch vụ nào có ít bệnh nhân sử dụng nhất
 
 CREATE VIEW Thongtindichvu
 AS
+
+
+
+
+
+
+
+
+
+-- 6. Bảng view về thuốc cho bệnh nhân
+      create view ChiTietDonThuoc as
+      select bn.TenBN, bs.TenBS, t.TenThuoc, ctdt.SoLuong, (t.GiaThuoc * ctdt.SoLuong) as TongTien
+      from DONTHUOC dt
+      join BENHNHAN bn on dt.MaBN = bn.MaBN
+      join BACSI bs on dt.MaBS = bs.MaBS
+      join CT_DONTHUOC ctdt on dt.MaDT = ctdt.MaDT
+      join THUOC t on ctdt.MaThuoc = t.MaThuoc;
+
+      select * from ChiTietDonThuoc
+
+
+---------------------*********THỦ TỤC*********---------------------
+--1. Lấy thông tin bệnh nhân theo mã bác sĩ
+CREATE PROCEDURE LayThongTinBenhNhanTheoBacSi
+    @MaBS varchar(10)
+AS
+BEGIN
+    SELECT bn.TenBN, bn.NgaySinh, bn.DiaChi, bn.Sdt, bn.TinhTrangSK
+    FROM BENHNHAN bn
+    JOIN DONTHUOC dt ON bn.MaBN = dt.MaBN
+    WHERE dt.MaBS = @MaBS;
+END;
+
+LayThongTinBenhNhanTheoBacSi @MaBs = 'K03BS01'
+
+
