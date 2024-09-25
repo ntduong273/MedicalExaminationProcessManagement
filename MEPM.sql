@@ -12,8 +12,7 @@ CREATE TABLE BENHNHAN
    Sdt varchar(12) unique,
    TinhTrangSK nvarchar(50)
 )
-SELECT * FROM benhnhan
-
+SELECT * FROM BENHNHAN
 INSERT INTO BENHNHAN VALUES
 ('BN01', N'Nguyễn Văn An', N'Nam', '12/4/1980', N'Hà Nội', '0001', N'Đau bụng dưới, có triệu chứng nôn mửa'),
 ('BN02', N'Đinh Thị Bình', N'Nữ', '05/19/1989', N'Hải Phòng', '0002', N'Đau họng, bị mất tiếng'),
@@ -48,7 +47,7 @@ CREATE TABLE KHOA
    MaKhoa varchar(10) primary key,
    TenKhoa nvarchar(50) not null,
 )
-SELECT * FROM khoa
+SELECT * FROM KHOA
 
 INSERT INTO KHOA VALUES
 ('K01', N'Khoa Tim Mạch'),
@@ -77,7 +76,7 @@ CREATE TABLE BACSI
    MaKhoa varchar(10) not null,
    constraint RBKN_BS_KH foreign key (MaKhoa) references KHOA(MaKhoa)
 )
-SELECT * FROM bacsi
+SELECT * FROM BACSI
 
 INSERT INTO BACSI VALUES
 ('K01BS01', N'Phạm Long Nhật', N'Chuyên Khoa Tim mạch', 'K01'),
@@ -123,7 +122,7 @@ CREATE TABLE THUOC
    Donvi nvarchar(10),
    MoTa nvarchar(250)
 )
-SELECT * FROM thuoc
+SELECT * FROM THUOC
 
 INSERT INTO THUOC VALUES
 --THUOC TIM MACH
@@ -212,7 +211,7 @@ CREATE TABLE DONTHUOC
    constraint RBKN_DT_BS foreign key (MaBS) references Bacsi(MaBS),     --Ràng buộc giá trị MaBS trong DONTHUOC phải nằm trong MaBS của BACSI
    constraint RBKN_DT_BN foreign key (MaBN) references Benhnhan(MaBN)   --Ràng buộc giá trị MaBN trong DONTHUOC phải nằm trong MaBN của BENHNHAN
 )
-SELECT * FROM donthuoc
+SELECT * FROM DONTHUOC
 
 INSERT INTO DONTHUOC VALUES
 ('DT001', 'K02BS01', 'BN01'),
@@ -247,7 +246,7 @@ CREATE TABLE CT_DONTHUOC
    constraint RBKN_DT_DT foreign key (MaDT) references DonThuoc(MaDT),		--Ràng buộc khóa ngoại của bảng CT_DONTHUOC với bảng DonThuoc thông qua MaDT
    constraint RBKN_DT_Th foreign key (MaThuoc) references Thuoc(MaThuoc)	--Ràng buộc khóa ngoại của bảng CT_DONTHUOC với bảng Thuoc thông qua MaThuoc
 )
-SELECT * FROM ct_donthuoc
+SELECT * FROM CT_DONTHUOC
 
 INSERT INTO CT_DONTHUOC VALUES
 ('DT001', 'T008', 2),
@@ -317,7 +316,7 @@ CREATE TABLE DICHVU
    MaKhoaQL varchar(10) not null,
    constraint RBTV_DV_K foreign key (MaKhoaQL) references Khoa(MaKhoa)
 )
-SELECT * FROM dichvu
+SELECT * FROM DICHVU
 
 INSERT INTO DICHVU VALUES
 ('K01DV01', N'Điện Tim', 2000000, 'K01'),
@@ -453,7 +452,7 @@ CREATE TABLE HOADONDV
    constraint RBKN_HDDV_BN foreign key (MaBN) references BenhNhan(MaBN),     --Ràng buộc khóa ngoại của bảng HOADONDV với bảng BenhNhan thông qua MaBN
    NgayLap date not null
 )
-SELECT * FROM hoadondv
+SELECT * FROM HOADONDV
 
 INSERT INTO HOADONDV VALUES
 ('HDV001', 'SDV001', 'BN03', '08/16/2024'),
