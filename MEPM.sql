@@ -2,7 +2,6 @@
 USE MEPM
 
 
-
 CREATE TABLE BENHNHAN
 (
    MaBN varchar(10) primary key,
@@ -113,8 +112,6 @@ INSERT INTO BACSI VALUES
 ('K14BS03', N'Hồ Quang Hiếu', N'Chuyên Khoa Tai - Mũi - Họng', 'K14'),
 ('K15BS01', N'Trần Văn Duy', N' Chuyên Khoa Răng - Hàm - Mặt', 'K15'),
 ('K15BS02', N'Đỗ Thị Phương Thảo', N'Chuyên Khoa Răng - Hàm - Mặt', 'K15')
-
-
 
 
 
@@ -312,7 +309,6 @@ INSERT INTO HOADONTHUOC VALUES
 
 
 
-
 CREATE TABLE DICHVU
 (
    MaDV varchar(10) primary key,
@@ -338,6 +334,7 @@ INSERT INTO DICHVU VALUES
 ('K10DV01', N'Siêu âm', 150000, 'K10'),
 ('K10DV02', N'Khám Thai', 200000, 'K10'),
 ('K10DV03', N'Chẩn Đoán Thai Nhi', 500000, 'K10'),
+('K10DV04', N'Đỡ Sinh Đẻ', 900000, 'K10'), -- NEW DICH VU (ADD NGAY 25/9)
 ('K11DV01', N'Dưỡng Khí', 1200000, 'K11'),
 ('K11DV02', N'Lọc Phổi', 5000000, 'K11'),
 ('K13DV01', N'Nội Soi Thận', 500000, 'K13'),
@@ -356,20 +353,96 @@ CREATE TABLE SUDUNGDV
 )
 SELECT * FROM SUDUNGDV
 
--- insert data vao SUDUNGDV
+
+INSERT INTO SUDUNGDV VALUES
+('SDV001', 'BN03'),
+('SDV002', 'BN05'),
+('SDV003', 'BN06'),
+('SDV004', 'BN07'),
+('SDV005', 'BN08'),
+('SDV006', 'BN09'),
+('SDV007', 'BN11'),
+('SDV008', 'BN13'),
+('SDV009', 'BN15'),
+('SDV010', 'BN16'),
+('SDV011', 'BN17'),
+('SDV012', 'BN18'),
+('SDV013', 'BN19'),
+('SDV014', 'BN20'),
+('SDV015', 'BN21'),
+('SDV016', 'BN22'),
+('SDV017', 'BN23'),
+('SDV018', 'BN24'),
+('SDV019', 'BN25')
 
 CREATE TABLE CT_DICHVU
 (
 	MaSDDV varchar(10) not null,
 	MaDV varchar(10) not null,
 	SoLuong int check (SoLuong > 0),
-	constraint RBKC_DV primary key (MaSDDV, MaDV),							--Ràng buộc khóa chính của bảng là kết hợp 2 cột MaDT và MaThuoc
+	constraint RBKC_DV primary key (MaSDDV, MaDV),							    --Ràng buộc khóa chính của bảng là kết hợp 2 cột MaDT và MaThuoc
     constraint RBKN_DV_SD foreign key (MaSDDV) references SuDungDV(MaSDDV),		--Ràng buộc khóa ngoại của bảng CT_DONTHUOC với bảng DonThuoc thông qua MaDT
     constraint RBKN_DV_DV foreign key (MaDV) references DichVu(MaDV)
 )
+
 select * from CT_DICHVU
 
--- insert data vao CT_DICHVU
+INSERT INTO CT_DICHVU VALUES
+('SDV001', 'K03DV02', 1), -- CHUP XQUANG
+
+('SDV002', 'K03DV01', 1), -- BO BOT
+('SDV002', 'K03DV02', 1), -- CHUP XQUANG
+('SDV002', 'K09DV01', 1), -- CAP CUU
+('SDV002', 'K09DV02', 1), -- HOI SUC
+('SDV002', 'K11DV01', 2), -- DUONG KHI
+
+('SDV003', 'K13DV01', 1), -- NOI SOI THAN
+
+('SDV004', 'K01DV01', 1), -- DIEN TIM
+('SDV004', 'K01DV02', 1), -- MO TIM
+
+('SDV005', 'K10DV01', 1), -- SIEU AM
+('SDV005', 'K10DV02', 1), -- KHAMTHAI
+('SDV005', 'K10DV04', 1), -- DO SINH DE
+('SDV005', 'K09DV02', 1), -- HOI SUC
+
+('SDV006', 'K03DV01', 1), -- BO BOT XUONG
+('SDV006', 'K03DV02', 1), -- CHUP XQUANG
+
+('SDV007', 'K10DV01', 1), --SIEU AM
+
+('SDV008', 'K03DV01', 1), -- BO BOT XUONG
+('SDV008', 'K03DV02', 1), -- CHUP XQUANG
+
+('SDV009', 'K03DV02', 1), -- CHUP XQUANG
+
+('SDV010', 'K10DV02', 1), -- KHAM THAI
+('SDV010', 'K10DV01', 1), -- SIEU AM
+('SDV010', 'K10DV04', 1), -- DO SINH DE
+('SDV010', 'K09DV02', 1), -- HOI SUC
+
+('SDV011', 'K15DV01', 1), -- NHO RANG
+
+('SDV012', 'K07DV01', 1), -- PHAU THUAT BONG
+
+('SDV013', 'K11DV01', 2), -- DUONG KHI
+('SDV013', 'K11DV02', 1), -- LOC PHOI
+
+('SDV014', 'K02DV01', 1), -- NOI SOI DA DAY
+('SDV014', 'K02DV02', 1), -- MO NOI SOI DA DAY
+
+('SDV015', 'K09DV01', 1), -- CAP CUU
+('SDV015', 'K09DV02', 1), -- HOI SUC
+('SDV015', 'K11DV01', 2), -- DUONG KHI
+
+('SDV016', 'K15DV01', 1), -- NHO RANG
+
+('SDV017', 'K13DV01', 1), -- NOI SOI THAN
+
+('SDV018', 'K01DV01', 1), -- DIEN TIM
+('SDV018', 'K01DV02', 1), -- MO TIM
+
+('SDV019', 'K03DV02', 1) -- CHUP XQUANG
 
 CREATE TABLE HOADONDV
 (
@@ -382,4 +455,23 @@ CREATE TABLE HOADONDV
 )
 SELECT * FROM hoadondv
 
--- insert data vao HOADONDV
+INSERT INTO HOADONDV VALUES
+('HDV001', 'SDV001', 'BN03', '08/16/2024'),
+('HDV002', 'SDV002', 'BN05', '09/12/2024'),
+('HDV003', 'SDV003', 'BN06', '09/17/2024'),
+('HDV004', 'SDV004', 'BN07', '06/29/2024'),
+('HDV005', 'SDV005', 'BN08', '08/02/2024'),
+('HDV006', 'SDV006', 'BN09', '09/09/2024'),
+('HDV007', 'SDV007', 'BN11', '09/14/2024'),
+('HDV008', 'SDV008', 'BN13', '07/24/2024'),
+('HDV009', 'SDV009', 'BN15', '09/04/2024'),
+('HDV010', 'SDV010', 'BN16', '09/05/2024'),
+('HDV011', 'SDV011', 'BN17', '08/11/2024'),
+('HDV012', 'SDV012', 'BN18', '07/26/2024'),
+('HDV013', 'SDV013', 'BN19', '08/29/2024'),
+('HDV014', 'SDV014', 'BN20', '09/20/2024'),
+('HDV015', 'SDV015', 'BN21', '07/30/2024'),
+('HDV016', 'SDV016', 'BN22', '09/04/2024'),
+('HDV017', 'SDV017', 'BN23', '06/25/2024'),
+('HDV018', 'SDV018', 'BN24', '09/12/2024'),
+('HDV019', 'SDV019', 'BN25', '09/17/2024')
