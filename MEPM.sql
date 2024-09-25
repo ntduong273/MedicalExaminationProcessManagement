@@ -548,4 +548,6 @@ from (hoadonthuoc hdt inner join ct_donthuoc ctdt on hdt.madt=ctdt.madt)
 inner join thuoc t on ctdt.mathuoc=t.mathuoc
 group by t.donvi  
 
+--8
+
 
