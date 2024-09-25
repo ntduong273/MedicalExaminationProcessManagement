@@ -758,16 +758,29 @@ SELECT * FROM Thongtinkhoa
 
 
 
--- 5. Tạo VIEW cho biết dịch vụ nào có ít bệnh nhân sử dụng nhất
+-- 5. Tạo VIEW cho biết số tiền mỗi bệnh nhân phải trả
 
-CREATE VIEW Thongtindichvu
+CREATE VIEW Thongtinchiphi
 AS
+SELECT TinhTien.MaBN N'Mã bệnh nhân', TenBN N'Họ tên', sum(TinhTien.Tong) N'Số tiền phải trả'
+FROM Benhnhan BN, 
+(
+-- Tổng tiền thuốc của mỗi bệnh nhân
+SELECT DT.MaBN, sum(TH.GiaThuoc * CTDT.Soluong) AS Tong
+FROM (Donthuoc DT inner join CT_Donthuoc CTDT on DT.MaDT = CTDT.MaDT)
+inner join Thuoc TH on CTDT.MaThuoc = TH.MaThuoc
+GROUP BY DT.MaBN
+union
+-- Tổng tiền dịch vụ của mỗi bệnh nhân
+SELECT SDDV.MaBN, sum(DV.Dongia * CTDV.Soluong) AS Tong
+FROM (SudungDV SDDV inner join CT_Dichvu CTDV on SDDV.MaSDDV = CTDV.MaSDDV)
+						inner join Dichvu DV on CTDV.MaDV = DV.MaDV
+GROUP BY SDDV.MaBN
+) AS TinhTien
+WHERE BN.MaBN = TinhTien.MaBN
+GROUP BY TinhTien.MaBN, TenBN
 
-
-
-
-
-
+SELECT * FROM Thongtinchiphi
 
 
 
@@ -781,6 +794,15 @@ AS
       join THUOC t on ctdt.MaThuoc = t.MaThuoc;
 
       select * from ChiTietDonThuoc
+
+
+
+
+
+
+
+
+
 
 
 ---------------------*********THỦ TỤC*********---------------------
