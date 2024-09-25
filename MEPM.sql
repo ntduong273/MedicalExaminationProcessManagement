@@ -484,7 +484,7 @@ INSERT INTO HOADONDV VALUES
 ---------------------*********TRUY VẤN*********---------------------
 	 
        ----------1 bảng ----------
---Phu 
+
 --1.Tên những bệnh nhân quê Bến Tre
 	 select Tenbn N'Tên bệnh nhân'
 	 from Benhnhan
@@ -508,13 +508,13 @@ INSERT INTO HOADONDV VALUES
 	 where Tenthuoc like N'C%'
 
 ---------------Nhiều bảng---------------
-	 
+
+--Phu	 
 --1.Thông tin bệnh nhân có hóa đơn tháng 9
          SELECT bn.*
 FROM benhnhan bn JOIN hoadonthuoc hdt ON bn.mabn = hdt.mabn
 WHERE MONTH(hdt.NgayLap) = 9;
 
-<<<<<<< HEAD
 --2.Thông tin bác sĩ kê thuốc có mã 'DT011'
 select bs.Mabs 'MÃ BS',tenbs 'Tên BS',tenkhoa 'Tên khoa'
 from khoa k,bacsi bs,donthuoc dt
