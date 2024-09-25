@@ -761,13 +761,24 @@ SELECT * FROM Thongtinthuoc
 
 
 
--- 4. Tạo VIEW cho biết khoa nào có số lượt bệnh nhân thăm khám, sử dụng dịch vụ nhiều nhất
+-- 4. Tạo VIEW cho biết khoa nào chưa có bệnh nhân thăm khám, sử dụng dịch vụ
 
 CREATE VIEW Thongtinkhoa
+AS 
+SELECT MaKhoa N'Mã khoa', TenKhoa N'Tên khoa'
+FROM Khoa
+except
+SELECT KH.MaKhoa, TenKhoa
+FROM (Khoa KH inner join Dichvu DV on KH.MaKhoa = DV.MaKhoaQL)
+			  inner join CT_Dichvu CTDV on CTDV.MaDV = DV.MaDV
+GROUP BY KH.MaKhoa, TenKhoa
+
+SELECT * FROM Thongtinkhoa
+
 
 
 
 -- 5. Tạo VIEW cho biết dịch vụ nào có ít bệnh nhân sử dụng nhất
 
 CREATE VIEW Thongtindichvu
-
+AS
