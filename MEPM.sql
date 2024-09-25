@@ -798,3 +798,4 @@ END;
 LayThongTinBenhNhanTheoBacSi @MaBs = 'K03BS01'
 
 
+===== Truy vấn của trường
