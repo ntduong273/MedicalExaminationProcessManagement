@@ -484,7 +484,7 @@ INSERT INTO HOADONDV VALUES
 ---------------------*********TRUY VẤN*********---------------------
 	 
        ----------1 bảng ----------
-	 
+--Phu 
 --1.Tên những bệnh nhân quê Bến Tre
 	 select Tenbn N'Tên bệnh nhân'
 	 from Benhnhan
@@ -515,14 +515,6 @@ FROM benhnhan bn JOIN hoadonthuoc hdt ON bn.mabn = hdt.mabn
 WHERE MONTH(hdt.NgayLap) = 9;
 
 <<<<<<< HEAD
---2.
-
-
--- Những bạn làm truy vấn thống nhất lại với nhau để trình bày cho dễ nhìn đi
-
-
-
-=======TRUY VẤN CỦA DẦU
 --2.Thông tin bác sĩ kê thuốc có mã 'DT011'
 select bs.Mabs 'MÃ BS',tenbs 'Tên BS',tenkhoa 'Tên khoa'
 from khoa k,bacsi bs,donthuoc dt
@@ -563,6 +555,14 @@ inner join thuoc t on ctdt.mathuoc=t.mathuoc
 group by t.donvi  
 
 --8
+
+
+-- Những bạn làm truy vấn thống nhất lại với nhau để trình bày cho dễ nhìn đi
+
+
+
+=======TRUY VẤN CỦA DẦU
+
 -- In ra đơn thuốc được kê đơn bới bác sĩ có tên là 'Phạm Long Nhật'
  Select DONTHUOC.MaDT from DONTHUOC
  inner join BACSI on DONTHUOC.MaBS= bacsi.MaBS where BACSI.TenBS =N'Phạm Long Nhật';
