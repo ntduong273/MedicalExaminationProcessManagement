@@ -509,4 +509,39 @@ INSERT INTO HOADONDV VALUES
 FROM benhnhan bn JOIN hoadonthuoc hdt ON bn.mabn = hdt.mabn
 WHERE MONTH(hdt.NgayLap) = 9;
 
---2.
+--2.Thông tin bác sĩ kê thuốc có mã 'DT011'
+select bs.Mabs 'MÃ BS',tenbs 'Tên BS',tenkhoa 'Tên khoa'
+from khoa k,bacsi bs,donthuoc dt
+where k.makhoa=bs.makhoa and bs.Mabs=dt.MaBS
+
+--3.Đưa ra tên những bệnh nhân sử dụng nhiều hơn 1 dịch vụ
+SELECT bn.tenbn, ctdv.soluong
+FROM benhnhan bn
+INNER JOIN sudungdv sddv ON bn.MaBN = sddv.MaBN 
+INNER JOIN ct_dichvu ctdv ON sddv.MaSDDV = ctdv.MaSDDV
+WHERE ctdv.soluong > 1;
+--4.Tổng lượng thuốc mà bác sĩ có mã 'K14BS03' đã kê
+SELECT bs.tenbs, SUM(ct.soluong) AS N'Tổng số lượng'
+FROM bacsi bs
+JOIN donthuoc dt ON bs.mabs = dt.mabs
+JOIN ct_donthuoc ct ON dt.madt = ct.madt
+WHERE bs.mabs = 'K14BS03'
+GROUP BY bs.tenbs;
+--5.Đưa ra tên những dịch vụ có giá cao thứ nhì 
+SELECT tendv, dongia
+FROM dichvu
+WHERE dongia = (
+    SELECT MAX(dongia)
+    FROM dichvu
+    WHERE dongia < (SELECT MAX(dongia) FROM dichvu)
+);
+--6.In ra thông tin các bệnh nhân đã khám hay chưa (khám rồi mới có hóa đơn thuốc )
+	select bn.mabn N'Mã bn', tenbn N'Tên bn',
+		           (case 
+				     when bn.mabn=hdt.mabn then N'Đã được khám'
+					 else N'Chưa được khám'
+					 end) as N'Trạng thái bệnh nhân'
+	from benhnhan bn full join hoadonthuoc hdt on bn.mabn=hdt.mabn 
+--7.  
+
+
