@@ -820,4 +820,176 @@ END;
 LayThongTinBenhNhanTheoBacSi @MaBs = 'K03BS01'
 
 
-===== Truy vấn của trường
+
+
+
+
+
+
+
+--- Truy vấn của Trường
+--1 Danh sách bệnh nhân do một bác sĩ cụ thể điều trị
+
+SELECT BN.MaBN, BN.TenBN, BN.GioiTinh, BN.NgaySinh, BN.DiaChi, BN.Sdt, BN.TinhTrangSK
+FROM BENHNHAN BN
+JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+WHERE DT.MaBS = 'K01BS01';
+
+--2 Danh sách thuốc trong một đơn thuốc
+
+SELECT T.MaThuoc, T.TenThuoc, T.GiaThuoc, T.Donvi, CT.Soluong
+FROM CT_DONTHUOC CT
+JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
+WHERE CT.MaDT = 'DT005';
+
+--3 Tổng chi phí của một hóa đơn dịch vụ
+
+SELECT SUM(DV.DonGia * CTDV.SoLuong) AS TongChiPhi
+FROM CT_DICHVU CTDV
+JOIN DICHVU DV ON CTDV.MaDV = DV.MaDV
+JOIN HOADONDV HDDV ON CTDV.MaSDDV = HDDV.MaSDDV
+WHERE HDDV.MaHDDV = 'HDV001';
+
+--4 Danh sách bác sĩ và số bệnh nhân mà bác sĩ điều trị
+
+SELECT BS.MaBS, BS.TenBS, COUNT(DISTINCT DT.MaBN) AS SoLuongBenhNhan
+FROM BACSI BS
+JOIN DONTHUOC DT ON BS.MaBS = DT.MaBS
+GROUP BY BS.MaBS, BS.TenBS;
+
+--5 Tổng chi phí thuốc và dịch vụ bệnh nhân đã sử dụng
+
+SELECT BN.MaBN, BN.TenBN, 
+       COALESCE(SUM(T.GiaThuoc * CTDT.Soluong), 0) AS TongChiPhiThuoc, 
+       COALESCE(SUM(DV.DonGia * CTDV.SoLuong), 0) AS TongChiPhiDichVu,
+       (COALESCE(SUM(T.GiaThuoc * CTDT.Soluong), 0) + COALESCE(SUM(DV.DonGia * CTDV.SoLuong), 0)) AS TongChiPhi
+FROM BENHNHAN BN
+LEFT JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+LEFT JOIN CT_DONTHUOC CTDT ON DT.MaDT = CTDT.MaDT
+LEFT JOIN THUOC T ON CTDT.MaThuoc = T.MaThuoc
+LEFT JOIN HOADONDV HDDV ON BN.MaBN = HDDV.MaBN
+LEFT JOIN CT_DICHVU CTDV ON HDDV.MaSDDV = CTDV.MaSDDV
+LEFT JOIN DICHVU DV ON CTDV.MaDV = DV.MaDV
+WHERE BN.MaBN = 'BN01' 
+GROUP BY BN.MaBN, BN.TenBN;
+
+--6 Tất cả bệnh nhân đã sử dụng dịch vụ và thuốc trong 1 khoảng thời gian cụ thể
+
+SELECT DISTINCT BN.MaBN, BN.TenBN, BN.GioiTinh, BN.NgaySinh, BN.DiaChi, BN.Sdt, BN.TinhTrangSK
+FROM BENHNHAN BN
+JOIN HOADONDV HDDV ON BN.MaBN = HDDV.MaBN
+JOIN HOADONTHUOC HDT ON BN.MaBN = HDT.MaBN
+WHERE HDDV.NgayLap BETWEEN '2024-01-01' AND '2024-12-31'
+  AND HDT.NgayLap BETWEEN '2024-01-01' AND '2024-12-31';
+
+--7 Doanh thu từ bán thuốc theo tháng
+
+SELECT 
+    FORMAT(HDT.NgayLap, 'yyyy-MM') AS Thang,
+    SUM(T.GiaThuoc * CTDT.Soluong) AS DoanhThu
+FROM HOADONTHUOC HDT
+JOIN DONTHUOC DT ON HDT.MaDT = DT.MaDT
+JOIN CT_DONTHUOC CTDT ON DT.MaDT = CTDT.MaDT
+JOIN THUOC T ON CTDT.MaThuoc = T.MaThuoc
+GROUP BY FORMAT(HDT.NgayLap, 'yyyy-MM')
+ORDER BY Thang;
+
+--8 Doanh thu từ dịch vụ theo tháng
+
+SELECT 
+    FORMAT(HDDV.NgayLap, 'yyyy-MM') AS Thang,
+    SUM(DV.DonGia * CTDV.SoLuong) AS DoanhThu
+FROM HOADONDV HDDV
+JOIN SUDUNGDV SDDV ON HDDV.MaSDDV = SDDV.MaSDDV
+JOIN CT_DICHVU CTDV ON SDDV.MaSDDV = CTDV.MaSDDV
+JOIN DICHVU DV ON CTDV.MaDV = DV.MaDV
+GROUP BY FORMAT(HDDV.NgayLap, 'yyyy-MM')
+ORDER BY Thang;
+
+--9 Thông tin bệnh nhân sử dụng nhiều dịch vụ nhất
+
+SELECT TOP 1
+    BN.MaBN,
+    BN.TenBN,
+    BN.GioiTinh,
+    BN.NgaySinh,
+    BN.DiaChi,
+    BN.Sdt,
+    COUNT(CTDV.MaDV) AS SoLuongDichVu
+FROM BENHNHAN BN
+JOIN SUDUNGDV SDDV ON BN.MaBN = SDDV.MaBN
+JOIN CT_DICHVU CTDV ON SDDV.MaSDDV = CTDV.MaSDDV
+GROUP BY BN.MaBN, BN.TenBN, BN.GioiTinh, BN.NgaySinh, BN.DiaChi, BN.Sdt
+ORDER BY SoLuongDichVu DESC;
+
+--10 Danh sách dịch vụ và số lượng lần mỗi dịch vụ được sử dụng trong khoảng thời gian cụ thể
+
+SELECT 
+    DV.MaDV,
+    DV.TenDV,
+    SUM(CTDV.SoLuong) AS SoLuongSuDung
+FROM DICHVU DV
+JOIN CT_DICHVU CTDV ON DV.MaDV = CTDV.MaDV
+JOIN SUDUNGDV SDDV ON CTDV.MaSDDV = SDDV.MaSDDV
+JOIN HOADONDV HDDV ON SDDV.MaSDDV = HDDV.MaSDDV
+WHERE HDDV.NgayLap BETWEEN '2024-01-01' AND '2024-12-31'
+GROUP BY DV.MaDV, DV.TenDV
+ORDER BY SoLuongSuDung DESC;
+
+
+--11 Thống kê số lượng bệnh nhân theo giới tính và tình trạng sức khỏe
+SELECT 
+    BN.GioiTinh,
+    BN.TinhTrangSK,
+    COUNT(BN.MaBN) AS SoLuongBN
+FROM BENHNHAN BN
+GROUP BY BN.GioiTinh, BN.TinhTrangSK
+ORDER BY BN.GioiTinh, BN.TinhTrangSK;
+
+
+--12 Dịch vụ được sử dụng nhiều nhất và bệnh nhân nào đã sử dụng
+WITH DichVuSuDung AS (
+    SELECT 
+        CTDV.MaDV,
+        SUM(CTDV.SoLuong) AS TongSuDung
+    FROM CT_DICHVU CTDV
+    JOIN SUDUNGDV SDDV ON CTDV.MaSDDV = SDDV.MaSDDV
+    GROUP BY CTDV.MaDV
+)
+
+SELECT 
+    DV.TenDV,
+    BN.TenBN
+FROM DichVuSuDung DVS
+JOIN DICHVU DV ON DVS.MaDV = DV.MaDV
+JOIN CT_DICHVU CTDV ON DV.MaDV = CTDV.MaDV
+JOIN SUDUNGDV SDDV ON CTDV.MaSDDV = SDDV.MaSDDV
+JOIN BENHNHAN BN ON SDDV.MaBN = BN.MaBN
+WHERE DVS.TongSuDung = (SELECT MAX(TongSuDung) FROM DichVuSuDung);
+
+
+--13 Bệnh nhân có tổng chi phí cao nhất
+SELECT TOP 1
+    BN.MaBN,
+    BN.TenBN,
+    COALESCE(SUM(DV.DonGia * CTDV.SoLuong), 0) + COALESCE(SUM(T.GiaThuoc * CTDT.Soluong), 0) AS TongChiPhi
+FROM BENHNHAN BN
+LEFT JOIN SUDUNGDV SDDV ON BN.MaBN = SDDV.MaBN
+LEFT JOIN CT_DICHVU CTDV ON SDDV.MaSDDV = CTDV.MaSDDV
+LEFT JOIN DICHVU DV ON CTDV.MaDV = DV.MaDV
+LEFT JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+LEFT JOIN CT_DONTHUOC CTDT ON DT.MaDT = CTDT.MaDT
+LEFT JOIN THUOC T ON CTDT.MaThuoc = T.MaThuoc
+GROUP BY BN.MaBN, BN.TenBN
+ORDER BY TongChiPhi DESC;
+
+
+--14 Bệnh nhân sử dụng dịch vụ mà chưa thanh toán
+SELECT 
+    BN.MaBN,
+    BN.TenBN
+FROM BENHNHAN BN
+WHERE BN.MaBN NOT IN (
+    SELECT DISTINCT HDDV.MaBN
+    FROM HOADONDV HDDV
+);
