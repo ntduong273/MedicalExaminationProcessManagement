@@ -535,13 +535,13 @@ WHERE dongia = (
     FROM dichvu
     WHERE dongia < (SELECT MAX(dongia) FROM dichvu)
 );
---6.In ra thông tin các bệnh nhân đã khám hay chưa (khám rồi mới có hóa đơn thuốc )
+--6.In ra thông tin các bệnh nhân đã khám hay chưa (khám rồi mới có đơn thuốc )
 	select bn.mabn N'Mã bn', tenbn N'Tên bn',
 		           (case 
-				     when bn.mabn=hdt.mabn then N'Đã được khám'
+				     when bn.mabn=dt.mabn then N'Đã được khám'
 					 else N'Chưa được khám'
 					 end) as N'Trạng thái bệnh nhân'
-	from benhnhan bn full join hoadonthuoc hdt on bn.mabn=hdt.mabn 
+	from benhnhan bn full join donthuoc dt on bn.mabn=dt.mabn 
 --7.  
 
 
