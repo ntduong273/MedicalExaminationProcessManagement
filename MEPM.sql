@@ -13,6 +13,7 @@ CREATE TABLE BENHNHAN
    TinhTrangSK nvarchar(50)
 )
 SELECT * FROM BENHNHAN
+
 INSERT INTO BENHNHAN VALUES
 ('BN01', N'Nguyễn Văn An', N'Nam', '12/4/1980', N'Hà Nội', '0001', N'Đau bụng dưới, có triệu chứng nôn mửa'),
 ('BN02', N'Đinh Thị Bình', N'Nữ', '05/19/1989', N'Hải Phòng', '0002', N'Đau họng, bị mất tiếng'),
@@ -74,7 +75,7 @@ CREATE TABLE BACSI
    TenBS nvarchar(50) not null,
    ChuyenNganh nvarchar(50) not null,
    MaKhoa varchar(10) not null,
-   constraint RBKN_BS_KH foreign key (MaKhoa) references KHOA(MaKhoa)
+   constraint RBKN_BS_KH foreign key (MaKhoa) references KHOA(MaKhoa)		--Ràng buộc giá trị MaKhoa trong BACSI phải nằm trong MaKhoa của KHOA
 )
 SELECT * FROM BACSI
 
@@ -314,7 +315,7 @@ CREATE TABLE DICHVU
    TenDV nvarchar(50) not null,
    DonGia int check(DonGia > 0),
    MaKhoaQL varchar(10) not null,
-   constraint RBTV_DV_K foreign key (MaKhoaQL) references Khoa(MaKhoa)
+   constraint RBTV_DV_K foreign key (MaKhoaQL) references Khoa(MaKhoa)		--Ràng buộc giá trị MaKhoaQL trong DICHVU phải nằm trong MaKhoa của Khoa
 )
 SELECT * FROM DICHVU
 
@@ -344,6 +345,7 @@ INSERT INTO DICHVU VALUES
 ('K15DV03', N'Niềng Răng', 30000000, 'K15')
 
 
+
 CREATE TABLE SUDUNGDV
 (
 	MaSDDV varchar(10) primary key,
@@ -351,7 +353,6 @@ CREATE TABLE SUDUNGDV
 	constraint RBKN_DV_BN foreign key (MaBN) references BenhNhan(MaBN)		--Ràng buộc khóa ngoại của bảng SUDUNGDV với bảng BENHNHAN thông qua MaBN
 )
 SELECT * FROM SUDUNGDV
-
 
 INSERT INTO SUDUNGDV VALUES
 ('SDV001', 'BN03'),
@@ -374,16 +375,17 @@ INSERT INTO SUDUNGDV VALUES
 ('SDV018', 'BN24'),
 ('SDV019', 'BN25')
 
+
+
 CREATE TABLE CT_DICHVU
 (
 	MaSDDV varchar(10) not null,
 	MaDV varchar(10) not null,
 	SoLuong int check (SoLuong > 0),
-	constraint RBKC_DV primary key (MaSDDV, MaDV),							    --Ràng buộc khóa chính của bảng là kết hợp 2 cột MaDT và MaThuoc
-    constraint RBKN_DV_SD foreign key (MaSDDV) references SuDungDV(MaSDDV),		--Ràng buộc khóa ngoại của bảng CT_DONTHUOC với bảng DonThuoc thông qua MaDT
-    constraint RBKN_DV_DV foreign key (MaDV) references DichVu(MaDV)
+	constraint RBKC_DV primary key (MaSDDV, MaDV),							    --Ràng buộc khóa chính của bảng là kết hợp 2 cột MaSDDV và MaDV
+    constraint RBKN_DV_SD foreign key (MaSDDV) references SuDungDV(MaSDDV),		--Ràng buộc khóa ngoại của bảng CT_DICHVU với bảng SuDungDV thông qua MaSDDV
+    constraint RBKN_DV_DV foreign key (MaDV) references DichVu(MaDV)			--Ràng buộc khóa ngoại của bảng CT_DICHVU với bảng DichVu thông qua MaDV
 )
-
 select * from CT_DICHVU
 
 INSERT INTO CT_DICHVU VALUES
@@ -442,6 +444,9 @@ INSERT INTO CT_DICHVU VALUES
 ('SDV018', 'K01DV02', 1), -- MO TIM
 
 ('SDV019', 'K03DV02', 1) -- CHUP XQUANG
+
+
+
 
 CREATE TABLE HOADONDV
 (
@@ -510,3 +515,140 @@ FROM benhnhan bn JOIN hoadonthuoc hdt ON bn.mabn = hdt.mabn
 WHERE MONTH(hdt.NgayLap) = 9;
 
 --2.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------------------*********VIEW*********---------------------
+
+
+-- 1. Tạo VIEW cho biết thông tin các bệnh nhân nam, địa chỉ ở Hà Nội
+
+CREATE VIEW Thongtinbenhnhan
+AS
+SELECT MaBN N'Mã bệnh nhân', TenBN N'Họ tên', NgaySinh N'Ngày sinh', TinhTrangSK N'Tình trạng sức khỏe'   
+FROM BENHNHAN
+WHERE GioiTinh = N'Nam' and DiaChi = N'Hà Nội'
+
+SELECT *  FROM Thongtinbenhnhan
+
+
+
+-- 2. Tạo VIEW cho biết thông tin hóa đơn có tổng tiền thuốc >= 1000000
+
+CREATE VIEW Thongtinhoadon
+AS
+SELECT HD.MaHDT N'Mã hóa đơn', HD.MaBN N'Mã bệnh nhân',  HD.MaDT N'Mã đơn thuốc', sum(TH.GiaThuoc * CTDT.Soluong) N'Tổng'
+FROM ((Hoadonthuoc HD inner join Donthuoc DT on HD.MaDT = DT.MaDT)
+inner join CT_Donthuoc CTDT on DT.MaDT = CTDT.MaDT)
+inner join Thuoc TH on CTDT.MaThuoc = TH.MaThuoc
+GROUP BY HD.MaHDT, HD.MaBN, HD.MaDT
+HAVING sum(TH.GiaThuoc * CTDT.Soluong) >= 1000000
+
+SELECT * FROM Thongtinhoadon
+
+
+
+-- 3. Tạo VIEW cho biết thông tin loại thuốc có số lượng bán chạy nhất
+
+CREATE VIEW Thongtinthuoc
+AS
+SELECT TH.MaThuoc N'Mã thuốc', TenThuoc N'Tên thuốc', sum(SoLuong) N'Đã bán ra', Donvi N'Đơn vị'
+FROM Thuoc TH inner join CT_Donthuoc CTDT on TH.MaThuoc = CTDT.MaThuoc
+GROUP BY TH.MaThuoc, TenThuoc, Donvi
+HAVING sum(SoLuong) = (SELECT top 1 sum(Soluong) FROM CT_Donthuoc GROUP BY MaThuoc ORDER BY sum(Soluong) DESC)
+
+
+SELECT * FROM Thongtinthuoc
+
+
+
+-- 4. Tạo VIEW cho biết khoa nào có số lượt bệnh nhân thăm khám, sử dụng dịch vụ nhiều nhất
+
+CREATE VIEW Thongtinkhoa
+
+
+
+-- 5. Tạo VIEW cho biết dịch vụ nào có ít bệnh nhân sử dụng nhất
+
+CREATE VIEW Thongtindichvu
+
+
