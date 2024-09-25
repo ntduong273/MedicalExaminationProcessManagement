@@ -549,5 +549,78 @@ inner join thuoc t on ctdt.mathuoc=t.mathuoc
 group by t.donvi  
 
 --8
+-- In ra đơn thuốc được kê đơn bới bác sĩ có tên là 'Phạm Long Nhật'
+ Select DONTHUOC.MaDT from DONTHUOC
+ inner join BACSI on DONTHUOC.MaBS= bacsi.MaBS where BACSI.TenBS =N'Phạm Long Nhật';
+
+ -- Tính tổng tiền thuốc cho một bệnh nhân dựa trên MaBN và TenBN
+SELECT BN.MaBN, BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
+FROM BENHNHAN BN
+JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
+JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
+WHERE BN.MaBN = 'BN01'  
+GROUP BY BN.MaBN, BN.TenBN;
+
+-- Tính tổng tiền thuốc cho một bệnh nhân dựa trên Tên Bệnh Nhân
+SELECT BN.MaBN, BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
+FROM BENHNHAN BN
+JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
+JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
+WHERE BN.TenBN = N'Nguyễn Văn An'  
+GROUP BY BN.MaBN, BN.TenBN;
+
+
+
+-- Lấy danh sách bệnh nhân có tổng tiền thuốc lớn hơn 30000
+SELECT BN.MaBN, BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
+FROM BENHNHAN BN
+JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
+JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
+GROUP BY BN.MaBN, BN.TenBN
+HAVING SUM(CT.Soluong * T.GiaThuoc) > 300000;  
+
+
+-- Lấy danh sách tên thuốc đã được mua bởi bệnh nhân dựa trên số điện thoại
+SELECT T.TenThuoc
+FROM BENHNHAN BN
+JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
+JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
+WHERE BN.Sdt = '0001';  
+
+-- Tính tổng tiền thuốc đã mua của một bệnh nhân dựa trên tên bệnh nhân
+SELECT BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
+FROM BENHNHAN BN
+JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
+JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
+WHERE BN.TenBN = N'Nguyễn Thị Duyên'  
+GROUP BY BN.TenBN;
+
+-- In ra danh sách các bệnh nhân chưa từng mua thuốc
+SELECT BN.MaBN, BN.TenBN, BN.Sdt
+FROM BENHNHAN BN
+LEFT JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+WHERE DT.MaDT IS NULL;  
+
+-- Tổng tiền thuốc đã bán trong một tháng
+SELECT SUM(CT_DONTHUOC.Soluong * THUOC.GiaThuoc) AS TongTienThuoc
+FROM HOADONTHUOC
+JOIN DONTHUOC ON HOADONTHUOC.MaDT = DONTHUOC.MaDT
+JOIN CT_DONTHUOC ON DONTHUOC.MaDT = CT_DONTHUOC.MaDT
+JOIN THUOC ON CT_DONTHUOC.MaThuoc = THUOC.MaThuoc
+WHERE MONTH(HOADONTHUOC.NgayLap) = 9 
+AND YEAR(HOADONTHUOC.NgayLap) = 2024;     
+-- Tổng tiền thuốc đã bán trong một năm
+SELECT SUM(CT_DONTHUOC.Soluong * THUOC.GiaThuoc) AS TongTienThuoc
+FROM HOADONTHUOC
+JOIN DONTHUOC ON HOADONTHUOC.MaDT = DONTHUOC.MaDT
+JOIN CT_DONTHUOC ON DONTHUOC.MaDT = CT_DONTHUOC.MaDT
+JOIN THUOC ON CT_DONTHUOC.MaThuoc = THUOC.MaThuoc
+WHERE YEAR(HOADONTHUOC.NgayLap) = 2024; 
+
 
 
