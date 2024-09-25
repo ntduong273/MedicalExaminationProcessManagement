@@ -518,6 +518,125 @@ WHERE MONTH(hdt.NgayLap) = 9;
 --2.
 
 
+-- Những bạn làm truy vấn thống nhất lại với nhau để trình bày cho dễ nhìn đi
+
+
+
+=======TRUY VẤN CỦA DẦU
+--2.Thông tin bác sĩ kê thuốc có mã 'DT011'
+select bs.Mabs 'MÃ BS',tenbs 'Tên BS',tenkhoa 'Tên khoa'
+from khoa k,bacsi bs,donthuoc dt
+where k.makhoa=bs.makhoa and bs.Mabs=dt.MaBS
+
+--3.Đưa ra tên những bệnh nhân sử dụng nhiều hơn 1 dịch vụ
+SELECT bn.tenbn, ctdv.soluong
+FROM benhnhan bn
+INNER JOIN sudungdv sddv ON bn.MaBN = sddv.MaBN 
+INNER JOIN ct_dichvu ctdv ON sddv.MaSDDV = ctdv.MaSDDV
+WHERE ctdv.soluong > 1;
+--4.Tổng lượng thuốc mà bác sĩ có mã 'K14BS03' đã kê
+SELECT bs.tenbs, SUM(ct.soluong) AS N'Tổng số lượng'
+FROM bacsi bs
+JOIN donthuoc dt ON bs.mabs = dt.mabs
+JOIN ct_donthuoc ct ON dt.madt = ct.madt
+WHERE bs.mabs = 'K14BS03'
+GROUP BY bs.tenbs;
+--5.Đưa ra tên những dịch vụ có giá cao thứ nhì 
+SELECT tendv, dongia
+FROM dichvu
+WHERE dongia = (
+    SELECT MAX(dongia)
+    FROM dichvu
+    WHERE dongia < (SELECT MAX(dongia) FROM dichvu)
+);
+--6.In ra thông tin các bệnh nhân đã khám hay chưa (khám rồi mới có đơn thuốc )
+	select bn.mabn N'Mã bn', tenbn N'Tên bn',
+		           (case 
+				     when bn.mabn=dt.mabn then N'Đã được khám'
+					 else N'Chưa được khám'
+					 end) as N'Trạng thái bệnh nhân'
+	from benhnhan bn full join donthuoc dt on bn.mabn=dt.mabn 
+--7.Sao kê số lượng đơn vị thuốc đã lên đơn cho bệnh nhân
+select t.donvi,count(ctdt.mathuoc) as N'Số lượng đã bán'
+from (hoadonthuoc hdt inner join ct_donthuoc ctdt on hdt.madt=ctdt.madt)
+inner join thuoc t on ctdt.mathuoc=t.mathuoc
+group by t.donvi  
+
+--8
+-- In ra đơn thuốc được kê đơn bới bác sĩ có tên là 'Phạm Long Nhật'
+ Select DONTHUOC.MaDT from DONTHUOC
+ inner join BACSI on DONTHUOC.MaBS= bacsi.MaBS where BACSI.TenBS =N'Phạm Long Nhật';
+
+ -- Tính tổng tiền thuốc cho một bệnh nhân dựa trên MaBN và TenBN
+SELECT BN.MaBN, BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
+FROM BENHNHAN BN
+JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
+JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
+WHERE BN.MaBN = 'BN01'  
+GROUP BY BN.MaBN, BN.TenBN;
+
+-- Tính tổng tiền thuốc cho một bệnh nhân dựa trên Tên Bệnh Nhân
+SELECT BN.MaBN, BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
+FROM BENHNHAN BN
+JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
+JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
+WHERE BN.TenBN = N'Nguyễn Văn An'  
+GROUP BY BN.MaBN, BN.TenBN;
+
+
+
+-- Lấy danh sách bệnh nhân có tổng tiền thuốc lớn hơn 30000
+SELECT BN.MaBN, BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
+FROM BENHNHAN BN
+JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
+JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
+GROUP BY BN.MaBN, BN.TenBN
+HAVING SUM(CT.Soluong * T.GiaThuoc) > 300000;  
+
+
+-- Lấy danh sách tên thuốc đã được mua bởi bệnh nhân dựa trên số điện thoại
+SELECT T.TenThuoc
+FROM BENHNHAN BN
+JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
+JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
+WHERE BN.Sdt = '0001';  
+
+-- Tính tổng tiền thuốc đã mua của một bệnh nhân dựa trên tên bệnh nhân
+SELECT BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
+FROM BENHNHAN BN
+JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
+JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
+WHERE BN.TenBN = N'Nguyễn Thị Duyên'  
+GROUP BY BN.TenBN;
+
+-- In ra danh sách các bệnh nhân chưa từng mua thuốc
+SELECT BN.MaBN, BN.TenBN, BN.Sdt
+FROM BENHNHAN BN
+LEFT JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+WHERE DT.MaDT IS NULL;  
+
+-- Tổng tiền thuốc đã bán trong một tháng
+SELECT SUM(CT_DONTHUOC.Soluong * THUOC.GiaThuoc) AS TongTienThuoc
+FROM HOADONTHUOC
+JOIN DONTHUOC ON HOADONTHUOC.MaDT = DONTHUOC.MaDT
+JOIN CT_DONTHUOC ON DONTHUOC.MaDT = CT_DONTHUOC.MaDT
+JOIN THUOC ON CT_DONTHUOC.MaThuoc = THUOC.MaThuoc
+WHERE MONTH(HOADONTHUOC.NgayLap) = 9 
+AND YEAR(HOADONTHUOC.NgayLap) = 2024;     
+-- Tổng tiền thuốc đã bán trong một năm
+SELECT SUM(CT_DONTHUOC.Soluong * THUOC.GiaThuoc) AS TongTienThuoc
+FROM HOADONTHUOC
+JOIN DONTHUOC ON HOADONTHUOC.MaDT = DONTHUOC.MaDT
+JOIN CT_DONTHUOC ON DONTHUOC.MaDT = CT_DONTHUOC.MaDT
+JOIN THUOC ON CT_DONTHUOC.MaThuoc = THUOC.MaThuoc
+WHERE YEAR(HOADONTHUOC.NgayLap) = 2024; 
+
+
 
 
 
@@ -652,121 +771,3 @@ CREATE VIEW Thongtinkhoa
 
 CREATE VIEW Thongtindichvu
 
-
-=======
---2.Thông tin bác sĩ kê thuốc có mã 'DT011'
-select bs.Mabs 'MÃ BS',tenbs 'Tên BS',tenkhoa 'Tên khoa'
-from khoa k,bacsi bs,donthuoc dt
-where k.makhoa=bs.makhoa and bs.Mabs=dt.MaBS
-
---3.Đưa ra tên những bệnh nhân sử dụng nhiều hơn 1 dịch vụ
-SELECT bn.tenbn, ctdv.soluong
-FROM benhnhan bn
-INNER JOIN sudungdv sddv ON bn.MaBN = sddv.MaBN 
-INNER JOIN ct_dichvu ctdv ON sddv.MaSDDV = ctdv.MaSDDV
-WHERE ctdv.soluong > 1;
---4.Tổng lượng thuốc mà bác sĩ có mã 'K14BS03' đã kê
-SELECT bs.tenbs, SUM(ct.soluong) AS N'Tổng số lượng'
-FROM bacsi bs
-JOIN donthuoc dt ON bs.mabs = dt.mabs
-JOIN ct_donthuoc ct ON dt.madt = ct.madt
-WHERE bs.mabs = 'K14BS03'
-GROUP BY bs.tenbs;
---5.Đưa ra tên những dịch vụ có giá cao thứ nhì 
-SELECT tendv, dongia
-FROM dichvu
-WHERE dongia = (
-    SELECT MAX(dongia)
-    FROM dichvu
-    WHERE dongia < (SELECT MAX(dongia) FROM dichvu)
-);
---6.In ra thông tin các bệnh nhân đã khám hay chưa (khám rồi mới có đơn thuốc )
-	select bn.mabn N'Mã bn', tenbn N'Tên bn',
-		           (case 
-				     when bn.mabn=dt.mabn then N'Đã được khám'
-					 else N'Chưa được khám'
-					 end) as N'Trạng thái bệnh nhân'
-	from benhnhan bn full join donthuoc dt on bn.mabn=dt.mabn 
---7.Sao kê số lượng đơn vị thuốc đã lên đơn cho bệnh nhân
-select t.donvi,count(ctdt.mathuoc) as N'Số lượng đã bán'
-from (hoadonthuoc hdt inner join ct_donthuoc ctdt on hdt.madt=ctdt.madt)
-inner join thuoc t on ctdt.mathuoc=t.mathuoc
-group by t.donvi  
-
---8
--- In ra đơn thuốc được kê đơn bới bác sĩ có tên là 'Phạm Long Nhật'
- Select DONTHUOC.MaDT from DONTHUOC
- inner join BACSI on DONTHUOC.MaBS= bacsi.MaBS where BACSI.TenBS =N'Phạm Long Nhật';
-
- -- Tính tổng tiền thuốc cho một bệnh nhân dựa trên MaBN và TenBN
-SELECT BN.MaBN, BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
-FROM BENHNHAN BN
-JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
-JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
-JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
-WHERE BN.MaBN = 'BN01'  
-GROUP BY BN.MaBN, BN.TenBN;
-
--- Tính tổng tiền thuốc cho một bệnh nhân dựa trên Tên Bệnh Nhân
-SELECT BN.MaBN, BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
-FROM BENHNHAN BN
-JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
-JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
-JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
-WHERE BN.TenBN = N'Nguyễn Văn An'  
-GROUP BY BN.MaBN, BN.TenBN;
-
-
-
--- Lấy danh sách bệnh nhân có tổng tiền thuốc lớn hơn 30000
-SELECT BN.MaBN, BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
-FROM BENHNHAN BN
-JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
-JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
-JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
-GROUP BY BN.MaBN, BN.TenBN
-HAVING SUM(CT.Soluong * T.GiaThuoc) > 300000;  
-
-
--- Lấy danh sách tên thuốc đã được mua bởi bệnh nhân dựa trên số điện thoại
-SELECT T.TenThuoc
-FROM BENHNHAN BN
-JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
-JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
-JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
-WHERE BN.Sdt = '0001';  
-
--- Tính tổng tiền thuốc đã mua của một bệnh nhân dựa trên tên bệnh nhân
-SELECT BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
-FROM BENHNHAN BN
-JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
-JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
-JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
-WHERE BN.TenBN = N'Nguyễn Thị Duyên'  
-GROUP BY BN.TenBN;
-
--- In ra danh sách các bệnh nhân chưa từng mua thuốc
-SELECT BN.MaBN, BN.TenBN, BN.Sdt
-FROM BENHNHAN BN
-LEFT JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
-WHERE DT.MaDT IS NULL;  
-
--- Tổng tiền thuốc đã bán trong một tháng
-SELECT SUM(CT_DONTHUOC.Soluong * THUOC.GiaThuoc) AS TongTienThuoc
-FROM HOADONTHUOC
-JOIN DONTHUOC ON HOADONTHUOC.MaDT = DONTHUOC.MaDT
-JOIN CT_DONTHUOC ON DONTHUOC.MaDT = CT_DONTHUOC.MaDT
-JOIN THUOC ON CT_DONTHUOC.MaThuoc = THUOC.MaThuoc
-WHERE MONTH(HOADONTHUOC.NgayLap) = 9 
-AND YEAR(HOADONTHUOC.NgayLap) = 2024;     
--- Tổng tiền thuốc đã bán trong một năm
-SELECT SUM(CT_DONTHUOC.Soluong * THUOC.GiaThuoc) AS TongTienThuoc
-FROM HOADONTHUOC
-JOIN DONTHUOC ON HOADONTHUOC.MaDT = DONTHUOC.MaDT
-JOIN CT_DONTHUOC ON DONTHUOC.MaDT = CT_DONTHUOC.MaDT
-JOIN THUOC ON CT_DONTHUOC.MaThuoc = THUOC.MaThuoc
-WHERE YEAR(HOADONTHUOC.NgayLap) = 2024; 
-
-
-
->>>>>>> 192e60a7394a4f863cb2f7a0b17b73b453acb81d
