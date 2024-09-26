@@ -386,7 +386,7 @@ CREATE TABLE CT_DICHVU
     constraint RBKN_DV_SD foreign key (MaSDDV) references SuDungDV(MaSDDV),		--Ràng buộc khóa ngoại của bảng CT_DICHVU với bảng SuDungDV thông qua MaSDDV
     constraint RBKN_DV_DV foreign key (MaDV) references DichVu(MaDV)			--Ràng buộc khóa ngoại của bảng CT_DICHVU với bảng DichVu thông qua MaDV
 )
-select * from CT_DICHVU
+SELECT * FROM CT_DICHVU
 
 INSERT INTO CT_DICHVU VALUES
 ('SDV001', 'K03DV02', 1), -- CHUP XQUANG
@@ -481,35 +481,42 @@ INSERT INTO HOADONDV VALUES
 ('HDV019', 'SDV019', 'BN25', '09/17/2024')
 
 
----------------------*********TRUY VẤN*********---------------------
+---------------------********* TRUY VẤN *********---------------------
 	 
-       ----------1 bảng ----------
+       ----------1 bảng----------
 
 --1.Tên những bệnh nhân quê Bến Tre
 	 select Tenbn N'Tên bệnh nhân'
 	 from Benhnhan
 	 where diachi=N'Bến Tre'
+
 --2.Thông tin bệnh nhân sinh năm 1997
 	 select*from benhnhan
 	 where year(ngaysinh) ='1997'
+
 --3.Đếm số bác sĩ ở khoa có mã khoa la 'K10'
 	 select count(makhoa) as N'Số bác sĩ K10'
 	 from bacsi
 	 where Makhoa='K10'
+
 --4.Tên các thuốc giá dưới 10000
 	 select Tenthuoc N'Tên thuốc'  from thuoc
 	 where Giathuoc<10000
+
 --5.Số lượng thuốc theo từng đơn vị 
 	 select Donvi N'Đơn vị',count(Tenthuoc) N'Số lượng thuốc'
 	 from thuoc
 	 group by Donvi
+
 --6.Tên những thuốc bắt đầu bằng chữ 'C'
 	 select Tenthuoc from thuoc 
 	 where Tenthuoc like N'C%'
 
----------------Nhiều bảng---------------
 
---Phu	 
+
+       ----------Nhiều bảng----------
+
+------Trần Đức Phú	 
 --1.Thông tin bệnh nhân có hóa đơn tháng 9
          SELECT bn.*
 FROM benhnhan bn JOIN hoadonthuoc hdt ON bn.mabn = hdt.mabn
@@ -526,6 +533,7 @@ FROM benhnhan bn
 INNER JOIN sudungdv sddv ON bn.MaBN = sddv.MaBN 
 INNER JOIN ct_dichvu ctdv ON sddv.MaSDDV = ctdv.MaSDDV
 WHERE ctdv.soluong > 1;
+
 --4.Tổng lượng thuốc mà bác sĩ có mã 'K14BS03' đã kê
 SELECT bs.tenbs, SUM(ct.soluong) AS N'Tổng số lượng'
 FROM bacsi bs
@@ -533,6 +541,7 @@ JOIN donthuoc dt ON bs.mabs = dt.mabs
 JOIN ct_donthuoc ct ON dt.madt = ct.madt
 WHERE bs.mabs = 'K14BS03'
 GROUP BY bs.tenbs;
+
 --5.Đưa ra tên những dịch vụ có giá cao thứ nhì 
 SELECT tendv, dongia
 FROM dichvu
@@ -541,6 +550,7 @@ WHERE dongia = (
     FROM dichvu
     WHERE dongia < (SELECT MAX(dongia) FROM dichvu)
 );
+
 --6.In ra thông tin các bệnh nhân đã khám hay chưa (khám rồi mới có đơn thuốc )
 	select bn.mabn N'Mã bn', tenbn N'Tên bn',
 		           (case 
@@ -548,59 +558,20 @@ WHERE dongia = (
 					 else N'Chưa được khám'
 					 end) as N'Trạng thái bệnh nhân'
 	from benhnhan bn full join donthuoc dt on bn.mabn=dt.mabn 
+
 --7.Sao kê số lượng đơn vị thuốc đã lên đơn cho bệnh nhân
 select t.donvi,count(ctdt.mathuoc) as N'Số lượng đã bán'
 from (hoadonthuoc hdt inner join ct_donthuoc ctdt on hdt.madt=ctdt.madt)
 inner join thuoc t on ctdt.mathuoc=t.mathuoc
 group by t.donvi  
 
---8.Tạo thủ tục cho biết thông tin bệnh nhân 
-create procedure Thongtinbenhnhan
-(@mabn nvarchar(20))
-as 
-select*from benhnhan
-where MaBN=@mabn
-    --Lời gọi : ThongtinBenhnhaN N'BN01'
---9.Tạo hàm đưa ra thông tin những bệnh nhân có cùng quê 
-create function Cungque
-(@Diachi Nvarchar(30))
-returns table 
-as 
-return
-(
-Select*from benhnhan
-where diachi=@diachi
-)
-     -- select*from cungque ( N'Hà nỘi')
---10.Tạo hàm đưa ra thông tin bệnh nhân đã được kê loại thuốc đươcj nhập vào từ máy tính 
-create function Thongtinnhanthuoc
-(@mathuoc nvarchar(20) )
-returns  @Bangthongtin table 
-(
-Mabn nvarchar(20),
-Tenbn Nvarchar(50)
-)
-as 
-Begin
-insert into @Bangthongtin 
-select bn.Mabn,bn.tenbn,ctdt.mathuoc from benhnhan bn ,hoadonthuoc hdt,donthuoc dt ,ct_donthuoc ctdt
-where bn.mabn=hdt.mabn and hdt.madt=dt.madt and dt.madt=ctdt.madt and ctdt.mathuoc=@mathuoc
-return
-end 
-                     select*from Thongtinnhanthuoc('t028')
 
-
--- Những bạn làm truy vấn thống nhất lại với nhau để trình bày cho dễ nhìn đi
-
-
-
-=======TRUY VẤN CỦA DẦU
-
--- In ra đơn thuốc được kê đơn bới bác sĩ có tên là 'Phạm Long Nhật'
+------Nguyễn Viết Dầu
+--8.In ra đơn thuốc được kê đơn bới bác sĩ có tên là 'Phạm Long Nhật'
  Select DONTHUOC.MaDT from DONTHUOC
  inner join BACSI on DONTHUOC.MaBS= bacsi.MaBS where BACSI.TenBS =N'Phạm Long Nhật';
 
- -- Tính tổng tiền thuốc cho một bệnh nhân dựa trên MaBN và TenBN
+--9.Tính tổng tiền thuốc cho một bệnh nhân dựa trên MaBN và TenBN
 SELECT BN.MaBN, BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
 FROM BENHNHAN BN
 JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
@@ -609,7 +580,7 @@ JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
 WHERE BN.MaBN = 'BN01'  
 GROUP BY BN.MaBN, BN.TenBN;
 
--- Tính tổng tiền thuốc cho một bệnh nhân dựa trên Tên Bệnh Nhân
+--10.Tính tổng tiền thuốc cho một bệnh nhân dựa trên Tên Bệnh Nhân
 SELECT BN.MaBN, BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
 FROM BENHNHAN BN
 JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
@@ -618,9 +589,7 @@ JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
 WHERE BN.TenBN = N'Nguyễn Văn An'  
 GROUP BY BN.MaBN, BN.TenBN;
 
-
-
--- Lấy danh sách bệnh nhân có tổng tiền thuốc lớn hơn 30000
+--11.Lấy danh sách bệnh nhân có tổng tiền thuốc lớn hơn 30000
 SELECT BN.MaBN, BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
 FROM BENHNHAN BN
 JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
@@ -629,8 +598,7 @@ JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
 GROUP BY BN.MaBN, BN.TenBN
 HAVING SUM(CT.Soluong * T.GiaThuoc) > 300000;  
 
-
--- Lấy danh sách tên thuốc đã được mua bởi bệnh nhân dựa trên số điện thoại
+--12.Lấy danh sách tên thuốc đã được mua bởi bệnh nhân dựa trên số điện thoại
 SELECT T.TenThuoc
 FROM BENHNHAN BN
 JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
@@ -638,7 +606,7 @@ JOIN CT_DONTHUOC CT ON DT.MaDT = CT.MaDT
 JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
 WHERE BN.Sdt = '0001';  
 
--- Tính tổng tiền thuốc đã mua của một bệnh nhân dựa trên tên bệnh nhân
+--13.Tính tổng tiền thuốc đã mua của một bệnh nhân dựa trên tên bệnh nhân
 SELECT BN.TenBN, SUM(CT.Soluong * T.GiaThuoc) AS TongTienThuoc
 FROM BENHNHAN BN
 JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
@@ -647,21 +615,22 @@ JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
 WHERE BN.TenBN = N'Nguyễn Thị Duyên'  
 GROUP BY BN.TenBN;
 
--- In ra danh sách các bệnh nhân chưa từng mua thuốc
+--14.In ra danh sách các bệnh nhân chưa từng mua thuốc
 SELECT BN.MaBN, BN.TenBN, BN.Sdt
 FROM BENHNHAN BN
 LEFT JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
 WHERE DT.MaDT IS NULL;  
 
--- Tổng tiền thuốc đã bán trong một tháng
+--15.Tổng tiền thuốc đã bán trong một tháng
 SELECT SUM(CT_DONTHUOC.Soluong * THUOC.GiaThuoc) AS TongTienThuoc
 FROM HOADONTHUOC
 JOIN DONTHUOC ON HOADONTHUOC.MaDT = DONTHUOC.MaDT
 JOIN CT_DONTHUOC ON DONTHUOC.MaDT = CT_DONTHUOC.MaDT
 JOIN THUOC ON CT_DONTHUOC.MaThuoc = THUOC.MaThuoc
 WHERE MONTH(HOADONTHUOC.NgayLap) = 9 
-AND YEAR(HOADONTHUOC.NgayLap) = 2024;     
--- Tổng tiền thuốc đã bán trong một năm
+AND YEAR(HOADONTHUOC.NgayLap) = 2024;
+
+--16.Tổng tiền thuốc đã bán trong một năm
 SELECT SUM(CT_DONTHUOC.Soluong * THUOC.GiaThuoc) AS TongTienThuoc
 FROM HOADONTHUOC
 JOIN DONTHUOC ON HOADONTHUOC.MaDT = DONTHUOC.MaDT
@@ -669,16 +638,16 @@ JOIN CT_DONTHUOC ON DONTHUOC.MaDT = CT_DONTHUOC.MaDT
 JOIN THUOC ON CT_DONTHUOC.MaThuoc = THUOC.MaThuoc
 WHERE YEAR(HOADONTHUOC.NgayLap) = 2024; 
 
-======== Truy vấn Chiến
---7.Giá cao nhất của dịch vụ trong mỗi khoa
+
+------Nguyễn Đức Chiến
+--19.Giá cao nhất của dịch vụ trong mỗi khoa
 select TenKhoa, TenDV, max(dv.DonGia) as GiaDichVuCaoNhat
 from DICHVU dv
 join KHOA k ON dv.MaKhoaQL = k.MaKhoa
 group by TenKhoa, TenDV
 order by GiaDichVuCaoNhat desc
 
-
---8.Thống kê số lượng bệnh nhận theo từng độ tuổi và giới tính
+--20.Thống kê số lượng bệnh nhận theo từng độ tuổi và giới tính
 select GioiTinh,
        CASE when YEAR(GETDATE()) - YEAR(NgaySinh) BETWEEN 0 AND 18 then '0-18'
             when YEAR(GETDATE()) - YEAR(NgaySinh) BETWEEN 19 AND 30 then '19-30'
@@ -698,14 +667,13 @@ group by GioiTinh,
             else 'Trên 60'
        end
 
---9.Thống kê số lượng bệnh nhân trong mỗi tháng
+--21.Thống kê số lượng bệnh nhân trong mỗi tháng
 select MONTH(NgayLap) as Thang, count(*) as SoLuongBenhNhan
 from HOADONTHUOC
 group by MONTH(NgayLap)
 order by MONTH(NgayLap)
 
-
---10.Số lương bệnh nhân mắc bệnh khi đến khám tại mỗi khoa:
+--22.Số lương bệnh nhân mắc bệnh khi đến khám tại mỗi khoa:
 select TenKhoa, TinhTrangSK, count(*) AS SoLuongBN
 from BENHNHAN B
 join DONTHUOC DT on B.MaBN = DT.MaBN
@@ -714,14 +682,14 @@ join KHOA K on BS.MaKhoa = K.MaKhoa
 group by TenKhoa, TinhTrangSK
 order by TenKhoa, SoLuongBN desc
 
---11. Thông tin về dịch vụ có giá cao nhất theo khoa
+--23. Thông tin về dịch vụ có giá cao nhất theo khoa
 select TenKhoa, TenDV, max(dv.DonGia) as GiaDichVuCaoNhat
 from DICHVU dv
 join KHOA k on dv.MaKhoaQL = k.MaKhoa
 group by k.TenKhoa, dv.TenDV
 order by GiaDichVuCaoNhat desc
 
---12.Tên khoa, mã bác sĩ, tên bác sĩ có nhiều bệnh nhân khám nhất theo mỗi khóa
+--24.Tên khoa, mã bác sĩ, tên bác sĩ có nhiều bệnh nhân khám nhất theo mỗi khóa
 select TenKhoa, bs.MaBS, TenBS, count(DISTINCT bn.MaBN) as SoLuongBenhNhan
 from KHOA k
 join BACSI bs on k.MaKhoa = bs.MaKhoa
@@ -731,11 +699,167 @@ group by k.TenKhoa, bs.MaBS, bs.TenBS
 order by SoLuongBenhNhan desc
 
 
----------------------*********VIEW*********---------------------
+------Trần Xuân Trường
+--25.Danh sách bệnh nhân do một bác sĩ cụ thể điều trị
+SELECT BN.MaBN, BN.TenBN, BN.GioiTinh, BN.NgaySinh, BN.DiaChi, BN.Sdt, BN.TinhTrangSK
+FROM BENHNHAN BN
+JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+WHERE DT.MaBS = 'K01BS01';
+
+--26.Danh sách thuốc trong một đơn thuốc
+SELECT T.MaThuoc, T.TenThuoc, T.GiaThuoc, T.Donvi, CT.Soluong
+FROM CT_DONTHUOC CT
+JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
+WHERE CT.MaDT = 'DT005';
+
+--27.Tổng chi phí của một hóa đơn dịch vụ
+SELECT SUM(DV.DonGia * CTDV.SoLuong) AS TongChiPhi
+FROM CT_DICHVU CTDV
+JOIN DICHVU DV ON CTDV.MaDV = DV.MaDV
+JOIN HOADONDV HDDV ON CTDV.MaSDDV = HDDV.MaSDDV
+WHERE HDDV.MaHDDV = 'HDV001';
+
+--28.Danh sách bác sĩ và số bệnh nhân mà bác sĩ điều trị
+SELECT BS.MaBS, BS.TenBS, COUNT(DISTINCT DT.MaBN) AS SoLuongBenhNhan
+FROM BACSI BS
+JOIN DONTHUOC DT ON BS.MaBS = DT.MaBS
+GROUP BY BS.MaBS, BS.TenBS;
+
+--29.Tổng chi phí thuốc và dịch vụ bệnh nhân đã sử dụng
+SELECT BN.MaBN, BN.TenBN, 
+       COALESCE(SUM(T.GiaThuoc * CTDT.Soluong), 0) AS TongChiPhiThuoc, 
+       COALESCE(SUM(DV.DonGia * CTDV.SoLuong), 0) AS TongChiPhiDichVu,
+       (COALESCE(SUM(T.GiaThuoc * CTDT.Soluong), 0) + COALESCE(SUM(DV.DonGia * CTDV.SoLuong), 0)) AS TongChiPhi
+FROM BENHNHAN BN
+LEFT JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+LEFT JOIN CT_DONTHUOC CTDT ON DT.MaDT = CTDT.MaDT
+LEFT JOIN THUOC T ON CTDT.MaThuoc = T.MaThuoc
+LEFT JOIN HOADONDV HDDV ON BN.MaBN = HDDV.MaBN
+LEFT JOIN CT_DICHVU CTDV ON HDDV.MaSDDV = CTDV.MaSDDV
+LEFT JOIN DICHVU DV ON CTDV.MaDV = DV.MaDV
+WHERE BN.MaBN = 'BN01' 
+GROUP BY BN.MaBN, BN.TenBN;
+
+--30.Tất cả bệnh nhân đã sử dụng dịch vụ và thuốc trong 1 khoảng thời gian cụ thể
+SELECT DISTINCT BN.MaBN, BN.TenBN, BN.GioiTinh, BN.NgaySinh, BN.DiaChi, BN.Sdt, BN.TinhTrangSK
+FROM BENHNHAN BN
+JOIN HOADONDV HDDV ON BN.MaBN = HDDV.MaBN
+JOIN HOADONTHUOC HDT ON BN.MaBN = HDT.MaBN
+WHERE HDDV.NgayLap BETWEEN '2024-01-01' AND '2024-12-31'
+  AND HDT.NgayLap BETWEEN '2024-01-01' AND '2024-12-31';
+
+--31.Doanh thu từ bán thuốc theo tháng
+SELECT 
+    FORMAT(HDT.NgayLap, 'yyyy-MM') AS Thang,
+    SUM(T.GiaThuoc * CTDT.Soluong) AS DoanhThu
+FROM HOADONTHUOC HDT
+JOIN DONTHUOC DT ON HDT.MaDT = DT.MaDT
+JOIN CT_DONTHUOC CTDT ON DT.MaDT = CTDT.MaDT
+JOIN THUOC T ON CTDT.MaThuoc = T.MaThuoc
+GROUP BY FORMAT(HDT.NgayLap, 'yyyy-MM')
+ORDER BY Thang;
+
+--32.Doanh thu từ dịch vụ theo tháng
+SELECT 
+    FORMAT(HDDV.NgayLap, 'yyyy-MM') AS Thang,
+    SUM(DV.DonGia * CTDV.SoLuong) AS DoanhThu
+FROM HOADONDV HDDV
+JOIN SUDUNGDV SDDV ON HDDV.MaSDDV = SDDV.MaSDDV
+JOIN CT_DICHVU CTDV ON SDDV.MaSDDV = CTDV.MaSDDV
+JOIN DICHVU DV ON CTDV.MaDV = DV.MaDV
+GROUP BY FORMAT(HDDV.NgayLap, 'yyyy-MM')
+ORDER BY Thang;
+
+--33.Thông tin bệnh nhân sử dụng nhiều dịch vụ nhất
+SELECT TOP 1
+    BN.MaBN,
+    BN.TenBN,
+    BN.GioiTinh,
+    BN.NgaySinh,
+    BN.DiaChi,
+    BN.Sdt,
+    COUNT(CTDV.MaDV) AS SoLuongDichVu
+FROM BENHNHAN BN
+JOIN SUDUNGDV SDDV ON BN.MaBN = SDDV.MaBN
+JOIN CT_DICHVU CTDV ON SDDV.MaSDDV = CTDV.MaSDDV
+GROUP BY BN.MaBN, BN.TenBN, BN.GioiTinh, BN.NgaySinh, BN.DiaChi, BN.Sdt
+ORDER BY SoLuongDichVu DESC;
+
+--34.Danh sách dịch vụ và số lượng lần mỗi dịch vụ được sử dụng trong khoảng thời gian cụ thể
+SELECT 
+    DV.MaDV,
+    DV.TenDV,
+    SUM(CTDV.SoLuong) AS SoLuongSuDung
+FROM DICHVU DV
+JOIN CT_DICHVU CTDV ON DV.MaDV = CTDV.MaDV
+JOIN SUDUNGDV SDDV ON CTDV.MaSDDV = SDDV.MaSDDV
+JOIN HOADONDV HDDV ON SDDV.MaSDDV = HDDV.MaSDDV
+WHERE HDDV.NgayLap BETWEEN '2024-01-01' AND '2024-12-31'
+GROUP BY DV.MaDV, DV.TenDV
+ORDER BY SoLuongSuDung DESC;
+
+--35.Thống kê số lượng bệnh nhân theo giới tính và tình trạng sức khỏe
+SELECT 
+    BN.GioiTinh,
+    BN.TinhTrangSK,
+    COUNT(BN.MaBN) AS SoLuongBN
+FROM BENHNHAN BN
+GROUP BY BN.GioiTinh, BN.TinhTrangSK
+ORDER BY BN.GioiTinh, BN.TinhTrangSK;
+
+--36.Dịch vụ được sử dụng nhiều nhất và bệnh nhân nào đã sử dụng
+WITH DichVuSuDung AS (
+    SELECT 
+        CTDV.MaDV,
+        SUM(CTDV.SoLuong) AS TongSuDung
+    FROM CT_DICHVU CTDV
+    JOIN SUDUNGDV SDDV ON CTDV.MaSDDV = SDDV.MaSDDV
+    GROUP BY CTDV.MaDV
+)
+
+SELECT 
+    DV.TenDV,
+    BN.TenBN
+FROM DichVuSuDung DVS
+JOIN DICHVU DV ON DVS.MaDV = DV.MaDV
+JOIN CT_DICHVU CTDV ON DV.MaDV = CTDV.MaDV
+JOIN SUDUNGDV SDDV ON CTDV.MaSDDV = SDDV.MaSDDV
+JOIN BENHNHAN BN ON SDDV.MaBN = BN.MaBN
+WHERE DVS.TongSuDung = (SELECT MAX(TongSuDung) FROM DichVuSuDung);
+
+--37.Bệnh nhân có tổng chi phí cao nhất
+SELECT TOP 1
+    BN.MaBN,
+    BN.TenBN,
+    COALESCE(SUM(DV.DonGia * CTDV.SoLuong), 0) + COALESCE(SUM(T.GiaThuoc * CTDT.Soluong), 0) AS TongChiPhi
+FROM BENHNHAN BN
+LEFT JOIN SUDUNGDV SDDV ON BN.MaBN = SDDV.MaBN
+LEFT JOIN CT_DICHVU CTDV ON SDDV.MaSDDV = CTDV.MaSDDV
+LEFT JOIN DICHVU DV ON CTDV.MaDV = DV.MaDV
+LEFT JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
+LEFT JOIN CT_DONTHUOC CTDT ON DT.MaDT = CTDT.MaDT
+LEFT JOIN THUOC T ON CTDT.MaThuoc = T.MaThuoc
+GROUP BY BN.MaBN, BN.TenBN
+ORDER BY TongChiPhi DESC;
+
+--38.Bệnh nhân sử dụng dịch vụ mà chưa thanh toán
+SELECT 
+    BN.MaBN,
+    BN.TenBN
+FROM BENHNHAN BN
+WHERE BN.MaBN NOT IN (
+    SELECT DISTINCT HDDV.MaBN
+    FROM HOADONDV HDDV
+);
 
 
--- 1. Tạo VIEW cho biết thông tin các bệnh nhân nam, địa chỉ ở Hà Nội
 
+
+
+
+---------------------********* VIEW *********---------------------
+
+--1.Tạo VIEW cho biết thông tin các bệnh nhân nam, địa chỉ ở Hà Nội
 CREATE VIEW Thongtinbenhnhan
 AS
 SELECT MaBN N'Mã bệnh nhân', TenBN N'Họ tên', NgaySinh N'Ngày sinh', TinhTrangSK N'Tình trạng sức khỏe'   
@@ -744,10 +868,7 @@ WHERE GioiTinh = N'Nam' and DiaChi = N'Hà Nội'
 
 SELECT *  FROM Thongtinbenhnhan
 
-
-
--- 2. Tạo VIEW cho biết thông tin hóa đơn có tổng tiền thuốc >= 1000000
-
+--2.Tạo VIEW cho biết thông tin hóa đơn có tổng tiền thuốc >= 1000000
 CREATE VIEW Thongtinhoadon
 AS
 SELECT HD.MaHDT N'Mã hóa đơn', HD.MaBN N'Mã bệnh nhân',  HD.MaDT N'Mã đơn thuốc', sum(TH.GiaThuoc * CTDT.Soluong) N'Tổng'
@@ -759,10 +880,7 @@ HAVING sum(TH.GiaThuoc * CTDT.Soluong) >= 1000000
 
 SELECT * FROM Thongtinhoadon
 
-
-
--- 3. Tạo VIEW cho biết thông tin loại thuốc có số lượng bán chạy nhất
-
+--3.Tạo VIEW cho biết thông tin loại thuốc có số lượng bán chạy nhất
 CREATE VIEW Thongtinthuoc
 AS
 SELECT TH.MaThuoc N'Mã thuốc', TenThuoc N'Tên thuốc', sum(SoLuong) N'Đã bán ra', Donvi N'Đơn vị'
@@ -770,13 +888,9 @@ FROM Thuoc TH inner join CT_Donthuoc CTDT on TH.MaThuoc = CTDT.MaThuoc
 GROUP BY TH.MaThuoc, TenThuoc, Donvi
 HAVING sum(SoLuong) = (SELECT top 1 sum(Soluong) FROM CT_Donthuoc GROUP BY MaThuoc ORDER BY sum(Soluong) DESC)
 
-
 SELECT * FROM Thongtinthuoc
 
-
-
--- 4. Tạo VIEW cho biết khoa nào chưa có bệnh nhân thăm khám, sử dụng dịch vụ
-
+--4.Tạo VIEW cho biết khoa nào chưa có bệnh nhân thăm khám, sử dụng dịch vụ
 CREATE VIEW Thongtinkhoa
 AS 
 SELECT MaKhoa N'Mã khoa', TenKhoa N'Tên khoa'
@@ -789,10 +903,7 @@ GROUP BY KH.MaKhoa, TenKhoa
 
 SELECT * FROM Thongtinkhoa
 
-
-
--- 5. Tạo VIEW cho biết số tiền mỗi bệnh nhân phải trả
-
+--5.Tạo VIEW cho biết số tiền mỗi bệnh nhân phải trả
 CREATE VIEW Thongtinchiphi
 AS
 SELECT TinhTien.MaBN N'Mã bệnh nhân', TenBN N'Họ tên', sum(TinhTien.Tong) N'Số tiền phải trả'
@@ -815,31 +926,36 @@ GROUP BY TinhTien.MaBN, TenBN
 
 SELECT * FROM Thongtinchiphi
 
+-- 6.Tạo VIEW về thông tin thuốc cho bệnh nhân
+create view ChiTietDonThuoc as
+select bn.TenBN, bs.TenBS, t.TenThuoc, ctdt.SoLuong, (t.GiaThuoc * ctdt.SoLuong) as TongTien
+from DONTHUOC dt
+join BENHNHAN bn on dt.MaBN = bn.MaBN
+join BACSI bs on dt.MaBS = bs.MaBS
+join CT_DONTHUOC ctdt on dt.MaDT = ctdt.MaDT
+join THUOC t on ctdt.MaThuoc = t.MaThuoc;
 
-
--- 6. Bảng view về thuốc cho bệnh nhân
-      create view ChiTietDonThuoc as
-      select bn.TenBN, bs.TenBS, t.TenThuoc, ctdt.SoLuong, (t.GiaThuoc * ctdt.SoLuong) as TongTien
-      from DONTHUOC dt
-      join BENHNHAN bn on dt.MaBN = bn.MaBN
-      join BACSI bs on dt.MaBS = bs.MaBS
-      join CT_DONTHUOC ctdt on dt.MaDT = ctdt.MaDT
-      join THUOC t on ctdt.MaThuoc = t.MaThuoc;
-
-      select * from ChiTietDonThuoc
-
+select * from ChiTietDonThuoc
 
 
 
 
 
 
+---------------------********* THỦ TỤC *********---------------------
+
+------Trần Đức Phú
+--1.Tạo thủ tục cho biết thông tin bệnh nhân 
+create procedure Thongtinbenhnhan
+(@mabn nvarchar(20))
+as 
+select*from benhnhan
+where MaBN=@mabn
+    --Lời gọi : ThongtinBenhnhaN N'BN01'
 
 
-
-
----------------------*********THỦ TỤC*********---------------------
---1. Lấy thông tin bệnh nhân theo mã bác sĩ
+------Nguyễn Đức Chiến
+--2.Tạo thủ tục lấy thông tin bệnh nhân theo mã bác sĩ (bác sĩ khám bệnh nhân nào)
 CREATE PROCEDURE LayThongTinBenhNhanTheoBacSi
     @MaBS varchar(10)
 AS
@@ -849,180 +965,114 @@ BEGIN
     JOIN DONTHUOC dt ON bn.MaBN = dt.MaBN
     WHERE dt.MaBS = @MaBS;
 END;
+    --Lời gọi : LayThongTinBenhNhanTheoBacSi @MaBs = 'K03BS01'
 
-LayThongTinBenhNhanTheoBacSi @MaBs = 'K03BS01'
+--3.Tạo thủ tục thống kê số lượng dịch vụ đã sử dụng theo khoa
+create procedure thongke_dichvu_theo_khoa
+as
+begin
+    select 
+        K.TenKhoa,
+        D.TenDV,
+        sum(CTD.Soluong) as TongSoLuong
+    from KHOA K
+    join DICHVU D on K.MaKhoa = D.MaKhoaQL
+    join CT_DICHVU CTD on D.MaDV = CTD.MaDV
+    join SUDUNGDV SD on CTD.MaSDDV = SD.MaSDDV
+    join BENHNHAN BN on SD.MaBN = BN.MaBN
+    group by K.TenKhoa, D.TenDV
+    order by K.TenKhoa
+end
+    --Lời gọi : thongke_dichvu_theo_khoa
 
-
-
-
-
-
-
-
-
---- Truy vấn của Trường
---1 Danh sách bệnh nhân do một bác sĩ cụ thể điều trị
-
-SELECT BN.MaBN, BN.TenBN, BN.GioiTinh, BN.NgaySinh, BN.DiaChi, BN.Sdt, BN.TinhTrangSK
-FROM BENHNHAN BN
-JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
-WHERE DT.MaBS = 'K01BS01';
-
---2 Danh sách thuốc trong một đơn thuốc
-
-SELECT T.MaThuoc, T.TenThuoc, T.GiaThuoc, T.Donvi, CT.Soluong
-FROM CT_DONTHUOC CT
-JOIN THUOC T ON CT.MaThuoc = T.MaThuoc
-WHERE CT.MaDT = 'DT005';
-
---3 Tổng chi phí của một hóa đơn dịch vụ
-
-SELECT SUM(DV.DonGia * CTDV.SoLuong) AS TongChiPhi
-FROM CT_DICHVU CTDV
-JOIN DICHVU DV ON CTDV.MaDV = DV.MaDV
-JOIN HOADONDV HDDV ON CTDV.MaSDDV = HDDV.MaSDDV
-WHERE HDDV.MaHDDV = 'HDV001';
-
---4 Danh sách bác sĩ và số bệnh nhân mà bác sĩ điều trị
-
-SELECT BS.MaBS, BS.TenBS, COUNT(DISTINCT DT.MaBN) AS SoLuongBenhNhan
-FROM BACSI BS
-JOIN DONTHUOC DT ON BS.MaBS = DT.MaBS
-GROUP BY BS.MaBS, BS.TenBS;
-
---5 Tổng chi phí thuốc và dịch vụ bệnh nhân đã sử dụng
-
-SELECT BN.MaBN, BN.TenBN, 
-       COALESCE(SUM(T.GiaThuoc * CTDT.Soluong), 0) AS TongChiPhiThuoc, 
-       COALESCE(SUM(DV.DonGia * CTDV.SoLuong), 0) AS TongChiPhiDichVu,
-       (COALESCE(SUM(T.GiaThuoc * CTDT.Soluong), 0) + COALESCE(SUM(DV.DonGia * CTDV.SoLuong), 0)) AS TongChiPhi
-FROM BENHNHAN BN
-LEFT JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
-LEFT JOIN CT_DONTHUOC CTDT ON DT.MaDT = CTDT.MaDT
-LEFT JOIN THUOC T ON CTDT.MaThuoc = T.MaThuoc
-LEFT JOIN HOADONDV HDDV ON BN.MaBN = HDDV.MaBN
-LEFT JOIN CT_DICHVU CTDV ON HDDV.MaSDDV = CTDV.MaSDDV
-LEFT JOIN DICHVU DV ON CTDV.MaDV = DV.MaDV
-WHERE BN.MaBN = 'BN01' 
-GROUP BY BN.MaBN, BN.TenBN;
-
---6 Tất cả bệnh nhân đã sử dụng dịch vụ và thuốc trong 1 khoảng thời gian cụ thể
-
-SELECT DISTINCT BN.MaBN, BN.TenBN, BN.GioiTinh, BN.NgaySinh, BN.DiaChi, BN.Sdt, BN.TinhTrangSK
-FROM BENHNHAN BN
-JOIN HOADONDV HDDV ON BN.MaBN = HDDV.MaBN
-JOIN HOADONTHUOC HDT ON BN.MaBN = HDT.MaBN
-WHERE HDDV.NgayLap BETWEEN '2024-01-01' AND '2024-12-31'
-  AND HDT.NgayLap BETWEEN '2024-01-01' AND '2024-12-31';
-
---7 Doanh thu từ bán thuốc theo tháng
-
-SELECT 
-    FORMAT(HDT.NgayLap, 'yyyy-MM') AS Thang,
-    SUM(T.GiaThuoc * CTDT.Soluong) AS DoanhThu
-FROM HOADONTHUOC HDT
-JOIN DONTHUOC DT ON HDT.MaDT = DT.MaDT
-JOIN CT_DONTHUOC CTDT ON DT.MaDT = CTDT.MaDT
-JOIN THUOC T ON CTDT.MaThuoc = T.MaThuoc
-GROUP BY FORMAT(HDT.NgayLap, 'yyyy-MM')
-ORDER BY Thang;
-
---8 Doanh thu từ dịch vụ theo tháng
-
-SELECT 
-    FORMAT(HDDV.NgayLap, 'yyyy-MM') AS Thang,
-    SUM(DV.DonGia * CTDV.SoLuong) AS DoanhThu
-FROM HOADONDV HDDV
-JOIN SUDUNGDV SDDV ON HDDV.MaSDDV = SDDV.MaSDDV
-JOIN CT_DICHVU CTDV ON SDDV.MaSDDV = CTDV.MaSDDV
-JOIN DICHVU DV ON CTDV.MaDV = DV.MaDV
-GROUP BY FORMAT(HDDV.NgayLap, 'yyyy-MM')
-ORDER BY Thang;
-
---9 Thông tin bệnh nhân sử dụng nhiều dịch vụ nhất
-
-SELECT TOP 1
-    BN.MaBN,
-    BN.TenBN,
-    BN.GioiTinh,
-    BN.NgaySinh,
-    BN.DiaChi,
-    BN.Sdt,
-    COUNT(CTDV.MaDV) AS SoLuongDichVu
-FROM BENHNHAN BN
-JOIN SUDUNGDV SDDV ON BN.MaBN = SDDV.MaBN
-JOIN CT_DICHVU CTDV ON SDDV.MaSDDV = CTDV.MaSDDV
-GROUP BY BN.MaBN, BN.TenBN, BN.GioiTinh, BN.NgaySinh, BN.DiaChi, BN.Sdt
-ORDER BY SoLuongDichVu DESC;
-
---10 Danh sách dịch vụ và số lượng lần mỗi dịch vụ được sử dụng trong khoảng thời gian cụ thể
-
-SELECT 
-    DV.MaDV,
-    DV.TenDV,
-    SUM(CTDV.SoLuong) AS SoLuongSuDung
-FROM DICHVU DV
-JOIN CT_DICHVU CTDV ON DV.MaDV = CTDV.MaDV
-JOIN SUDUNGDV SDDV ON CTDV.MaSDDV = SDDV.MaSDDV
-JOIN HOADONDV HDDV ON SDDV.MaSDDV = HDDV.MaSDDV
-WHERE HDDV.NgayLap BETWEEN '2024-01-01' AND '2024-12-31'
-GROUP BY DV.MaDV, DV.TenDV
-ORDER BY SoLuongSuDung DESC;
-
-
---11 Thống kê số lượng bệnh nhân theo giới tính và tình trạng sức khỏe
-SELECT 
-    BN.GioiTinh,
-    BN.TinhTrangSK,
-    COUNT(BN.MaBN) AS SoLuongBN
-FROM BENHNHAN BN
-GROUP BY BN.GioiTinh, BN.TinhTrangSK
-ORDER BY BN.GioiTinh, BN.TinhTrangSK;
-
-
---12 Dịch vụ được sử dụng nhiều nhất và bệnh nhân nào đã sử dụng
-WITH DichVuSuDung AS (
-    SELECT 
-        CTDV.MaDV,
-        SUM(CTDV.SoLuong) AS TongSuDung
-    FROM CT_DICHVU CTDV
-    JOIN SUDUNGDV SDDV ON CTDV.MaSDDV = SDDV.MaSDDV
-    GROUP BY CTDV.MaDV
+--4.Tạo thủ tục tra cứu thông tin bác sĩ theo chuyên ngành
+create procedure tracuu_bacsi_theo_chuyennganh (
+    @ChuyenNganh nvarchar(50)
 )
+as
+begin
+    select 
+        MaBS,
+        TenBS,
+        MaKhoa,
+        ChuyenNganh
+    from BACSI
+    where ChuyenNganh like '%' + @ChuyenNganh + '%'
+end
+    --Lời gọi : tracuu_bacsi_theo_chuyennganh @ChuyenNganh = N'Chuyên Khoa Nội Tiêu Hóa'
 
-SELECT 
-    DV.TenDV,
-    BN.TenBN
-FROM DichVuSuDung DVS
-JOIN DICHVU DV ON DVS.MaDV = DV.MaDV
-JOIN CT_DICHVU CTDV ON DV.MaDV = CTDV.MaDV
-JOIN SUDUNGDV SDDV ON CTDV.MaSDDV = SDDV.MaSDDV
-JOIN BENHNHAN BN ON SDDV.MaBN = BN.MaBN
-WHERE DVS.TongSuDung = (SELECT MAX(TongSuDung) FROM DichVuSuDung);
+--5.Tạo thủ tục tổng hợp danh sách thuốc đã sử dụng bởi một bệnh nhân
+create procedure tonghop_thuoc_benhnhan (
+    @MaBN nvarchar(10)
+)
+as
+begin
+    select 
+        T.TenThuoc,
+        sum(CTDT.SoLuong) as TongSoLuong,
+        T.GiaThuoc,
+        sum(CTDT.SoLuong * T.GiaThuoc) as TongChiPhi
+    from CT_DONTHUOC CTDT
+    join THUOC T on CTDT.MaThuoc = T.MaThuoc
+    join DONTHUOC DT on CTDT.MaDT = DT.MaDT
+    where DT.MaBN = @MaBN
+    group by T.TenThuoc, T.GiaThuoc
+    order by T.TenThuoc
+end
+    --Lời gọi : tonghop_thuoc_benhnhan @MaBN = 'BN04'
+
+--6.Tạo thủ tục thống kê chi phí điều trị của một bệnh nhân
+create procedure thongke_chiphi_dieu_tri_benhnhan (
+    @MaBN nvarchar(10)
+)
+as
+begin
+    select 
+        BN.MaBN,
+        BN.TenBN,
+        sum(DV.DonGia * CTD.SoLuong) as TongChiPhiDV,
+        sum(T.GiaThuoc * CTDT.SoLuong) as TongChiPhiThuoc,
+        (sum(DV.DonGia * CTD.SoLuong) + sum(T.GiaThuoc * CTDT.SoLuong)) as TongChiPhi
+    from BENHNHAN BN
+    left join SUDUNGDV SD on BN.MaBN = SD.MaBN
+    left join CT_DICHVU CTD on SD.MaSDDV = CTD.MaSDDV
+    left join DICHVU DV on CTD.MaDV = DV.MaDV
+    left join DONTHUOC DT on BN.MaBN = DT.MaBN
+    left join CT_DONTHUOC CTDT on DT.MaDT = CTDT.MaDT
+    left join THUOC T on CTDT.MaThuoc = T.MaThuoc
+    where BN.MaBN = @MaBN
+    group by BN.MaBN, BN.TenBN
+end
+
+    --Lời gọi : thongke_chiphi_dieu_tri_benhnhan @MaBN = 'BN04'
 
 
---13 Bệnh nhân có tổng chi phí cao nhất
-SELECT TOP 1
-    BN.MaBN,
-    BN.TenBN,
-    COALESCE(SUM(DV.DonGia * CTDV.SoLuong), 0) + COALESCE(SUM(T.GiaThuoc * CTDT.Soluong), 0) AS TongChiPhi
-FROM BENHNHAN BN
-LEFT JOIN SUDUNGDV SDDV ON BN.MaBN = SDDV.MaBN
-LEFT JOIN CT_DICHVU CTDV ON SDDV.MaSDDV = CTDV.MaSDDV
-LEFT JOIN DICHVU DV ON CTDV.MaDV = DV.MaDV
-LEFT JOIN DONTHUOC DT ON BN.MaBN = DT.MaBN
-LEFT JOIN CT_DONTHUOC CTDT ON DT.MaDT = CTDT.MaDT
-LEFT JOIN THUOC T ON CTDT.MaThuoc = T.MaThuoc
-GROUP BY BN.MaBN, BN.TenBN
-ORDER BY TongChiPhi DESC;
+---------------------********* HÀM *********---------------------
+--1.Tạo hàm đưa ra thông tin những bệnh nhân có cùng quê 
+create function Cungque
+(@Diachi Nvarchar(30))
+returns table 
+as 
+return
+(
+Select*from benhnhan
+where diachi=@diachi
+)
+    -- select*from cungque ( N'Hà nỘi')
 
-
---14 Bệnh nhân sử dụng dịch vụ mà chưa thanh toán
-SELECT 
-    BN.MaBN,
-    BN.TenBN
-FROM BENHNHAN BN
-WHERE BN.MaBN NOT IN (
-    SELECT DISTINCT HDDV.MaBN
-    FROM HOADONDV HDDV
-);
+--2.Tạo hàm đưa ra thông tin bệnh nhân đã được kê loại thuốc đươcj nhập vào từ máy tính 
+create function Thongtinnhanthuoc
+(@mathuoc nvarchar(20) )
+returns  @Bangthongtin table 
+(
+Mabn nvarchar(20),
+Tenbn Nvarchar(50)
+)
+as 
+Begin
+insert into @Bangthongtin 
+select bn.Mabn,bn.tenbn,ctdt.mathuoc from benhnhan bn ,hoadonthuoc hdt,donthuoc dt ,ct_donthuoc ctdt
+where bn.mabn=hdt.mabn and hdt.madt=dt.madt and dt.madt=ctdt.madt and ctdt.mathuoc=@mathuoc
+return
+end 
+    -- select*from Thongtinnhanthuoc('t028')
