@@ -554,7 +554,40 @@ from (hoadonthuoc hdt inner join ct_donthuoc ctdt on hdt.madt=ctdt.madt)
 inner join thuoc t on ctdt.mathuoc=t.mathuoc
 group by t.donvi  
 
---8
+--8.Tạo thủ tục cho biết thông tin bệnh nhân 
+create procedure Thongtinbenhnhan
+(@mabn nvarchar(20))
+as 
+select*from benhnhan
+where MaBN=@mabn
+    --Lời gọi : ThongtinBenhnhaN N'BN01'
+--9.Tạo hàm đưa ra thông tin những bệnh nhân có cùng quê 
+create function Cungque
+(@Diachi Nvarchar(30))
+returns table 
+as 
+return
+(
+Select*from benhnhan
+where diachi=@diachi
+)
+     -- select*from cungque ( N'Hà nỘi')
+--10.Tạo hàm đưa ra thông tin bệnh nhân đã được kê loại thuốc đươcj nhập vào từ máy tính 
+create function Thongtinnhanthuoc
+(@mathuoc nvarchar(20) )
+returns  @Bangthongtin table 
+(
+Mabn nvarchar(20),
+Tenbn Nvarchar(50)
+)
+as 
+Begin
+insert into @Bangthongtin 
+select bn.Mabn,bn.tenbn,ctdt.mathuoc from benhnhan bn ,hoadonthuoc hdt,donthuoc dt ,ct_donthuoc ctdt
+where bn.mabn=hdt.mabn and hdt.madt=dt.madt and dt.madt=ctdt.madt and ctdt.mathuoc=@mathuoc
+return
+end 
+                     select*from Thongtinnhanthuoc('t028')
 
 
 -- Những bạn làm truy vấn thống nhất lại với nhau để trình bày cho dễ nhìn đi
