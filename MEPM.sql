@@ -522,7 +522,7 @@ INSERT INTO HOADONDV VALUES
 FROM benhnhan bn JOIN hoadonthuoc hdt ON bn.mabn = hdt.mabn
 WHERE MONTH(hdt.NgayLap) = 9;
 
---2.Thông tin bác sĩ kê thuốc có mã 'DT011'
+--2.Thông tin bác sĩ kê đơn thuốc có mã đơn thuốc 'DT011'
 select bs.Mabs 'MÃ BS',tenbs 'Tên BS',tenkhoa 'Tên khoa'
 from khoa k,bacsi bs,donthuoc dt
 where k.makhoa=bs.makhoa and bs.Mabs=dt.MaBS
