@@ -1029,7 +1029,7 @@ where diachi=@diachi
 )
     -- select*from cungque ( N'Hà nỘi')
 
---2.Tạo hàm đưa ra thông tin bệnh nhân đã được kê loại thuốc đươcj nhập vào từ máy tính 
+--2.Tạo hàm đưa ra thông tin bệnh nhân đã được kê loại thuốc được nhập vào từ máy tính 
 create function Thongtinnhanthuoc
 (@mathuoc nvarchar(20) )
 returns  @Bangthongtin table 
