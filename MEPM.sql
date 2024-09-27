@@ -1042,18 +1042,50 @@ where diachi=@diachi
     -- select*from cungque ( N'Hà nỘi')
 
 --2.Tạo hàm đưa ra thông tin bệnh nhân đã được kê loại thuốc được nhập vào từ máy tính 
-create function Thongtinnhanthuoc
-(@mathuoc nvarchar(20) )
-returns  @Bangthongtin table 
+   --Cách 1
+CREATE FUNCTION THONGTINNHANTHUOC
 (
-Mabn nvarchar(20),
-Tenbn Nvarchar(50)
+    @MATHUOC NVARCHAR(20)
 )
-as 
-Begin
-insert into @Bangthongtin 
-select bn.Mabn,bn.tenbn,ctdt.mathuoc from benhnhan bn ,hoadonthuoc hdt,donthuoc dt ,ct_donthuoc ctdt
-where bn.mabn=hdt.mabn and hdt.madt=dt.madt and dt.madt=ctdt.madt and ctdt.mathuoc=@mathuoc
-return
-end 
+RETURNS @BANGTHONGTINn TABLE 
+(
+    MABN NVARCHAR(20),
+    TENBN NVARCHAR(50)
+)
+AS 
+BEGIN
+    INSERT INTO @BANGTHONGTIN
+    SELECT BN.MABN, BN.TENBN
+    FROM BENHNHAN BN, HOADONTHUOC HDT, DONTHUOC DT, CT_DONTHUOC CTDT
+    WHERE BN.MABN = HDT.MABN 
+    AND HDT.MADT = DT.MADT 
+    AND DT.MADT = CTDT.MADT 
+    AND CTDT.MATHUOC = @MATHUOC;
+
+    RETURN;
+END
     -- select*from Thongtinnhanthuoc('t028')
+ --Cách 2
+CREATE FUNCTION ThongTinNhan
+(
+    @mathuoc NVARCHAR(20)
+)
+RETURNS @Bang TABLE 
+(
+    MaBN NVARCHAR(20),
+    TenBN NVARCHAR(50)
+)
+AS
+BEGIN
+    INSERT INTO @Bang
+    SELECT bn.MaBN, bn.TenBN
+    FROM benhnhan bn
+    INNER JOIN hoadonthuoc hdt ON bn.MaBN = hdt.MaBN
+    INNER JOIN donthuoc dt ON hdt.MaDT = dt.MaDT
+    INNER JOIN ct_donthuoc ctdt ON dt.MaDT = ctdt.MaDT
+    WHERE ctdt.MaThuoc = @mathuoc;
+
+    RETURN;
+END;
+
+    --    select*from Thongtinnhan('t028')
