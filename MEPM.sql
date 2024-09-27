@@ -518,7 +518,7 @@ INSERT INTO HOADONDV VALUES
 
 ------Nguyễn Đức Phú	 
 --1.Thông tin bệnh nhân có hóa đơn tháng 9
-         SELECT bn.*
+SELECT bn.*
 FROM benhnhan bn JOIN hoadonthuoc hdt ON bn.mabn = hdt.mabn
 WHERE MONTH(hdt.NgayLap) = 9;
 
