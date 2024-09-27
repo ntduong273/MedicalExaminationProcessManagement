@@ -954,10 +954,17 @@ as
 select*from benhnhan
 where MaBN=@mabn
     --Lời gọi : ThongtinBenhnhaN N'BN01'
-
+--2.Tạo thủ tục cho biết mã và tên các bác sĩ đã kê đơn cho bệnh nhân được nhập vào
+create proc TracuuBS
+(@mabn nvarchar(20))
+as
+Select bs.MaBS,TenBS,ChuyenNganh 
+from benhnhan bn,donthuoc dt,bacsi bs
+where bn.mabn=dt.mabn and dt.mabs=bs.mabs and bn.mabn=@mabn
+    -- Lời gọi : TracuuBs N'BN06'
 
 ------Nguyễn Đức Chiến
---2.Tạo thủ tục lấy thông tin bệnh nhân theo mã bác sĩ (bác sĩ khám bệnh nhân nào)
+--3.Tạo thủ tục lấy thông tin bệnh nhân theo mã bác sĩ (bác sĩ khám bệnh nhân nào)
 CREATE PROCEDURE LayThongTinBenhNhanTheoBacSi
     @MaBS varchar(10)
 AS
@@ -969,7 +976,7 @@ BEGIN
 END;
     --Lời gọi : LayThongTinBenhNhanTheoBacSi @MaBs = 'K03BS01'
 
---3.Tạo thủ tục thống kê số lượng dịch vụ đã sử dụng theo khoa
+--4.Tạo thủ tục thống kê số lượng dịch vụ đã sử dụng theo khoa
 create procedure thongke_dichvu_theo_khoa
 as
 begin
@@ -987,7 +994,7 @@ begin
 end
     --Lời gọi : thongke_dichvu_theo_khoa
 
---4.Tạo thủ tục tra cứu thông tin bác sĩ theo chuyên ngành
+--5.Tạo thủ tục tra cứu thông tin bác sĩ theo chuyên ngành
 create procedure tracuu_bacsi_theo_chuyennganh (
     @ChuyenNganh nvarchar(50)
 )
@@ -1003,7 +1010,7 @@ begin
 end
     --Lời gọi : tracuu_bacsi_theo_chuyennganh @ChuyenNganh = N'Chuyên Khoa Nội Tiêu Hóa'
 
---5.Tạo thủ tục tổng hợp danh sách thuốc đã sử dụng bởi một bệnh nhân
+--6.Tạo thủ tục tổng hợp danh sách thuốc đã sử dụng bởi một bệnh nhân
 create procedure tonghop_thuoc_benhnhan (
     @MaBN nvarchar(10)
 )
@@ -1016,7 +1023,12 @@ begin
         sum(CTDT.SoLuong * T.GiaThuoc) as TongChiPhi
     from CT_DONTHUOC CTDT
     join THUOC T on CTDT.MaThuoc = T.MaThuoc
-    join DONTHPhú
+    join DONTH
+
+
+	---------------------********* HÀM *********---------------------
+
+--Nguyễn Đức Phú
 --1.Tạo hàm đưa ra thông tin những bệnh nhân có cùng quê 
 create function Cungque
 (@Diachi Nvarchar(30))
