@@ -516,7 +516,7 @@ INSERT INTO HOADONDV VALUES
 
        ----------Nhiều bảng----------
 
-------Trần Đức Phú	 
+------Nguyễn Đức Phú	 
 --1.Thông tin bệnh nhân có hóa đơn tháng 9
          SELECT bn.*
 FROM benhnhan bn JOIN hoadonthuoc hdt ON bn.mabn = hdt.mabn
@@ -528,11 +528,13 @@ from khoa k,bacsi bs,donthuoc dt
 where k.makhoa=bs.makhoa and bs.Mabs=dt.MaBS
 
 --3.Đưa ra tên những bệnh nhân sử dụng nhiều hơn 1 dịch vụ
-SELECT bn.tenbn, ctdv.soluong
+SELECT bn.tenbn, COUNT(ctdv.MaDV) AS so_luong_dv
 FROM benhnhan bn
 INNER JOIN sudungdv sddv ON bn.MaBN = sddv.MaBN 
 INNER JOIN ct_dichvu ctdv ON sddv.MaSDDV = ctdv.MaSDDV
-WHERE ctdv.soluong > 1;
+GROUP BY bn.tenbn
+HAVING COUNT(ctdv.MaDV) > 1;
+
 
 --4.Tổng lượng thuốc mà bác sĩ có mã 'K14BS03' đã kê
 SELECT bs.tenbs, SUM(ct.soluong) AS N'Tổng số lượng'
@@ -944,7 +946,7 @@ select * from ChiTietDonThuoc
 
 ---------------------********* THỦ TỤC *********---------------------
 
-------Trần Đức Phú
+------Nguyễn Đức Phú
 --1.Tạo thủ tục cho biết thông tin bệnh nhân 
 create procedure Thongtinbenhnhan
 (@mabn nvarchar(20))
@@ -1014,40 +1016,7 @@ begin
         sum(CTDT.SoLuong * T.GiaThuoc) as TongChiPhi
     from CT_DONTHUOC CTDT
     join THUOC T on CTDT.MaThuoc = T.MaThuoc
-    join DONTHUOC DT on CTDT.MaDT = DT.MaDT
-    where DT.MaBN = @MaBN
-    group by T.TenThuoc, T.GiaThuoc
-    order by T.TenThuoc
-end
-    --Lời gọi : tonghop_thuoc_benhnhan @MaBN = 'BN04'
-
---6.Tạo thủ tục thống kê chi phí điều trị của một bệnh nhân
-create procedure thongke_chiphi_dieu_tri_benhnhan (
-    @MaBN nvarchar(10)
-)
-as
-begin
-    select 
-        BN.MaBN,
-        BN.TenBN,
-        sum(DV.DonGia * CTD.SoLuong) as TongChiPhiDV,
-        sum(T.GiaThuoc * CTDT.SoLuong) as TongChiPhiThuoc,
-        (sum(DV.DonGia * CTD.SoLuong) + sum(T.GiaThuoc * CTDT.SoLuong)) as TongChiPhi
-    from BENHNHAN BN
-    left join SUDUNGDV SD on BN.MaBN = SD.MaBN
-    left join CT_DICHVU CTD on SD.MaSDDV = CTD.MaSDDV
-    left join DICHVU DV on CTD.MaDV = DV.MaDV
-    left join DONTHUOC DT on BN.MaBN = DT.MaBN
-    left join CT_DONTHUOC CTDT on DT.MaDT = CTDT.MaDT
-    left join THUOC T on CTDT.MaThuoc = T.MaThuoc
-    where BN.MaBN = @MaBN
-    group by BN.MaBN, BN.TenBN
-end
-
-    --Lời gọi : thongke_chiphi_dieu_tri_benhnhan @MaBN = 'BN04'
-
-
----------------------********* HÀM *********---------------------
+    join DONTHPhú
 --1.Tạo hàm đưa ra thông tin những bệnh nhân có cùng quê 
 create function Cungque
 (@Diachi Nvarchar(30))
