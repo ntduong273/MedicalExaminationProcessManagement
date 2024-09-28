@@ -1042,7 +1042,7 @@ where diachi=@diachi
     -- select*from cungque ( N'Hà nỘi')
 
 --2.Tạo hàm đưa ra thông tin bệnh nhân đã được kê loại thuốc được nhập vào từ máy tính 
-   --Cách 1
+      --Cách 1
 CREATE FUNCTION THONGTINNHANTHUOC
 (
     @MATHUOC NVARCHAR(20)
@@ -1065,7 +1065,7 @@ BEGIN
     RETURN;
 END
     -- select*from Thongtinnhanthuoc('t028')
- --Cách 2
+      --Cách 2
 CREATE FUNCTION ThongTinNhan
 (
     @mathuoc NVARCHAR(20)
@@ -1089,6 +1089,7 @@ BEGIN
 END;
     --    select*from Thongtinnhan('t028')
 
+--3.Tạo hàm đưa ra thông tin của bác sĩ trong đã kê đơn cho bệnh nhân(nếu bệnh nhân chưa có đơn thì sẽ hiện 'Chưa kê đơn') 
 CREATE FUNCTION BSKEDON
 (
 @MABN NVARCHAR(15)
