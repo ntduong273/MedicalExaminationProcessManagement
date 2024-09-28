@@ -535,7 +535,6 @@ INNER JOIN ct_dichvu ctdv ON sddv.MaSDDV = ctdv.MaSDDV
 GROUP BY bn.tenbn
 HAVING COUNT(ctdv.MaDV) > 1;
 
-
 --4.Tổng lượng thuốc mà bác sĩ có mã 'K14BS03' đã kê
 SELECT bs.tenbs, SUM(ct.soluong) AS N'Tổng số lượng'
 FROM bacsi bs
@@ -643,11 +642,18 @@ WHERE YEAR(HOADONTHUOC.NgayLap) = 2024;
 
 ------Nguyễn Đức Chiến
 --19.Giá cao nhất của dịch vụ trong mỗi khoa
-select TenKhoa, TenDV, max(dv.DonGia) as GiaDichVuCaoNhat
+select 
+    k.TenKhoa, 
+    dv.TenDV, 
+    dv.DonGia as GiaDichVuCaoNhat
 from DICHVU dv
-join KHOA k ON dv.MaKhoaQL = k.MaKhoa
-group by TenKhoa, TenDV
-order by GiaDichVuCaoNhat desc
+join KHOA k on dv.MaKhoaQL = k.MaKhoa
+join(
+    select MaKhoaQL, max(DonGia) as GiaCaoNhat
+    from DICHVU
+    group by MaKhoaQL
+)as maxGia on dv.MaKhoaQL = maxGia.MaKhoaQL and dv.DonGia = maxGia.GiaCaoNhat
+order by GiaDichVuCaoNhat desc;
 
 --20.Thống kê số lượng bệnh nhận theo từng độ tuổi và giới tính
 select GioiTinh,
@@ -684,21 +690,31 @@ join KHOA K on BS.MaKhoa = K.MaKhoa
 group by TenKhoa, TinhTrangSK
 order by TenKhoa, SoLuongBN desc
 
---23. Thông tin về dịch vụ có giá cao nhất theo khoa
-select TenKhoa, TenDV, max(dv.DonGia) as GiaDichVuCaoNhat
-from DICHVU dv
-join KHOA k on dv.MaKhoaQL = k.MaKhoa
-group by k.TenKhoa, dv.TenDV
-order by GiaDichVuCaoNhat desc
+--23. Danh sách bệnh nhân đã sử dụng dịch vụ, số lần sử dụng dịch vụ, tổng số tiền chi trả cho mỗi bệnh nhân
+select
+    bn.MaBN,
+    bn.TenBN,
+    count(sd.MaSDDV) as SoLanSDDV,
+    sum(ctdv.SoLuong * dv.DonGia) as TongTien
+from BENHNHAN bn
+join SUDUNGDV sd on bn.MaBN = sd.MaBN
+join CT_DICHVU ctdv on sd.MaSDDV = ctdv.MaSDDV
+join DICHVU dv on ctdv.MaDV = dv.MaDV
+group by bn.MaBN, bn.TenBN
+having count(sd.MaSDDV) >= 1
+order by TongTien desc
 
---24.Tên khoa, mã bác sĩ, tên bác sĩ có nhiều bệnh nhân khám nhất theo mỗi khóa
-select TenKhoa, bs.MaBS, TenBS, count(DISTINCT bn.MaBN) as SoLuongBenhNhan
-from KHOA k
-join BACSI bs on k.MaKhoa = bs.MaKhoa
-join DONTHUOC dt on bs.MaBS = dt.MaBS
-join BENHNHAN bn on dt.MaBN = bn.MaBN
-group by k.TenKhoa, bs.MaBS, bs.TenBS
-order by SoLuongBenhNhan desc
+--24.Danh sách các bệnh nhân và các dịch vụ mà họ đã sử dụng, nhưng không được kê đơn thuốc nào
+select
+    bn.MaBN,
+    bn.TenBN,
+    dv.TenDV
+from BENHNHAN bn
+join SUDUNGDV sd on bn.MaBN = sd.MaBN
+join CT_DICHVU ctdv on sd.MaSDDV = ctdv.MaSDDV
+join DICHVU dv on ctdv.MaDV = dv.MaDV
+where bn.MaBN not in (select DISTINCT MaBN from DONTHUOC)
+order by bn.TenBN
 
 
 ------Trần Xuân Trường
@@ -928,6 +944,8 @@ GROUP BY TinhTien.MaBN, TenBN
 
 SELECT * FROM Thongtinchiphi
 
+
+------Nguyễn Đức Chiến
 -- 6.Tạo VIEW về thông tin thuốc cho bệnh nhân
 create view ChiTietDonThuoc as
 select bn.TenBN, bs.TenBS, t.TenThuoc, ctdt.SoLuong, (t.GiaThuoc * ctdt.SoLuong) as TongTien
@@ -1011,23 +1029,63 @@ end
     --Lời gọi : tracuu_bacsi_theo_chuyennganh @ChuyenNganh = N'Chuyên Khoa Nội Tiêu Hóa'
 
 --6.Tạo thủ tục tổng hợp danh sách thuốc đã sử dụng bởi một bệnh nhân
-CREATE PROCEDURE tonghop_thuoc_benhnhan (
-    @MaBN NVARCHAR(10)
+create procedure tonghop_thuoc_benhnhan (
+    @MaBN nvarchar(10)
 )
-AS
-BEGIN
-    SELECT 
+as
+begin
+    select 
         T.TenThuoc,
-        SUM(CTDT.SoLuong) AS TongSoLuong,
+        sum(CTDT.SoLuong) as TongSoLuong,
         T.GiaThuoc,
-        SUM(CTDT.SoLuong * T.GiaThuoc) AS TongChiPhi
-    FROM CT_DONTHUOC CTDT
-    JOIN THUOC T ON CTDT.MaThuoc = T.MaThuoc
-    JOIN DONTHUOC DT ON CTDT.MaDT = DT.MaDT
-    WHERE DT.MaBN = @MaBN
-    GROUP BY T.TenThuoc, T.GiaThuoc;
-END;
-      --  tonghop_thuoc_benhnhan @mabn='BN04'
+        sum(CTDT.SoLuong * T.GiaThuoc) as TongChiPhi
+    from CT_DONTHUOC CTDT
+    join THUOC T on CTDT.MaThuoc = T.MaThuoc
+    join DONTHUOC DT on CTDT.MaDT = DT.MaDT
+    where DT.MaBN = @MaBN
+    group by T.TenThuoc, T.GiaThuoc
+    order by T.TenThuoc
+end
+    --Lời gọi : tonghop_thuoc_benhnhan @mabn = 'BN04'
+
+--7.Tạo thủ tục thống kê chi phí điều trị của một bệnh nhân
+create procedure thongke_chiphi_dieu_tri_benhnhan (
+    @MaBN nvarchar(10)
+)
+as
+begin
+    select 
+        BN.MaBN,
+        BN.TenBN,
+        ISNULL(sum(DV.DonGia * CTD.SoLuong), 0) as TongChiPhiDV,
+        ISNULL(sum(T.GiaThuoc * CTDT.SoLuong), 0) as TongChiPhiThuoc,
+        ISNULL(sum(DV.DonGia * CTD.SoLuong), 0) + ISNULL(sum(T.GiaThuoc * CTDT.SoLuong), 0) as TongChiPhi
+    from BENHNHAN BN
+    left join SUDUNGDV SD on BN.MaBN = SD.MaBN
+    left join CT_DICHVU CTD on SD.MaSDDV = CTD.MaSDDV
+    left join DICHVU DV on CTD.MaDV = DV.MaDV
+    left join DONTHUOC DT on BN.MaBN = DT.MaBN
+    left join CT_DONTHUOC CTDT on DT.MaDT = CTDT.MaDT
+    left join THUOC T on CTDT.MaThuoc = T.MaThuoc
+    where BN.MaBN = @MaBN
+    group by BN.MaBN, BN.TenBN
+end
+    --Lời gọi : thongke_chiphi_dieu_tri_benhnhan @MaBN = 'BN04'
+
+--8.Tạo thủ tục thống kê số lượng bác sĩ theo từng khoa
+create procedure thongke_bacsi_theo_khoa
+as
+begin
+    select 
+        K.TenKhoa,
+        count(BS.MaBS) as SoLuongBacSi
+    from KHOA K
+    left join BACSI BS on K.MaKhoa = BS.MaKhoa
+    group by K.TenKhoa
+    order by SoLuongBacSi desc
+end
+
+
 
 
 	---------------------********* HÀM *********---------------------
