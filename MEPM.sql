@@ -1011,19 +1011,23 @@ end
     --Lời gọi : tracuu_bacsi_theo_chuyennganh @ChuyenNganh = N'Chuyên Khoa Nội Tiêu Hóa'
 
 --6.Tạo thủ tục tổng hợp danh sách thuốc đã sử dụng bởi một bệnh nhân
-create procedure tonghop_thuoc_benhnhan (
-    @MaBN nvarchar(10)
+CREATE PROCEDURE tonghop_thuoc_benhnhan (
+    @MaBN NVARCHAR(10)
 )
-as
-begin
-    select 
+AS
+BEGIN
+    SELECT 
         T.TenThuoc,
-        sum(CTDT.SoLuong) as TongSoLuong,
+        SUM(CTDT.SoLuong) AS TongSoLuong,
         T.GiaThuoc,
-        sum(CTDT.SoLuong * T.GiaThuoc) as TongChiPhi
-    from CT_DONTHUOC CTDT
-    join THUOC T on CTDT.MaThuoc = T.MaThuoc
-    join DONTH
+        SUM(CTDT.SoLuong * T.GiaThuoc) AS TongChiPhi
+    FROM CT_DONTHUOC CTDT
+    JOIN THUOC T ON CTDT.MaThuoc = T.MaThuoc
+    JOIN DONTHUOC DT ON CTDT.MaDT = DT.MaDT
+    WHERE DT.MaBN = @MaBN
+    GROUP BY T.TenThuoc, T.GiaThuoc;
+END;
+      --  tonghop_thuoc_benhnhan @mabn='BN04'
 
 
 	---------------------********* HÀM *********---------------------
